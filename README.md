@@ -19,3 +19,28 @@ Executar o **.bat** para realizar a execução dos testes automatizados com a ex
 ```bat
 $ test-coverage.bat
 ```
+
+## Padrões na Prática
+
+### Strategy
+
+#### Problema:
+
+Utilizar o método Distinct do System.Linq, este espera uma IEqualityComparer.
+
+Nós não queremos criar uma única implementação engessada que nos permita comparar os objetos de uma única forma.
+
+##### Solução:
+
+1. Criar uma classe que implemente a interface IEqualityComparer;
+2. Esta classe deve receber o 'como' os objetos deverão ser comparados através de um parametro;
+
+<u>Desta forma a classe que criamos sabe comparar objetos, porém ela não sabe os critérios que serão utilizados, os critérios serão injetados através de uma função anônima.</u>
+
+* [Implementação](src/Workbench.Comparer/GenericComparerFactory.cs)
+* [Consumo](src/Workbench.GenericComparer.Tests/GenericComparerFactoryTest.cs#L27)
+
+Podemos tornar o consumo ainda mais interessante criando uma *Sugar Sintax* através de métodos de extensão.
+
+* [Implementação](src/Workbench.Linq.Extensions/DistinctExtensions.cs)
+* [Consumo](src/Workbench.Linq.Extensions.Tests/DistinctExtensionsTests.cs#L26)
