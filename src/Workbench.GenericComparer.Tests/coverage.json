@@ -1,0 +1,44 @@
+{
+  "Workbench.Comparer.dll": {
+    "C:\\Users\\victor.fructuoso\\source\\repos\\DesignPatternSamples\\src\\Workbench.Comparer\\GenericComparerFactory.cs": {
+      "Workbench.Comparer.GenericComparerFactory`1": {
+        "System.Func`2<TEntity,System.Object> Workbench.Comparer.GenericComparerFactory`1::get_Predicate()": {
+          "Lines": {
+            "9": 24
+          },
+          "Branches": []
+        },
+        "Workbench.Comparer.GenericComparerFactory`1<TEntity> Workbench.Comparer.GenericComparerFactory`1::Create(System.Func`2<TEntity,System.Object>)": {
+          "Lines": {
+            "14": 2,
+            "15": 2,
+            "16": 2
+          },
+          "Branches": []
+        },
+        "System.Boolean Workbench.Comparer.GenericComparerFactory`1::Equals(TEntity,TEntity)": {
+          "Lines": {
+            "19": 4,
+            "20": 4,
+            "21": 4
+          },
+          "Branches": []
+        },
+        "System.Int32 Workbench.Comparer.GenericComparerFactory`1::GetHashCode(TEntity)": {
+          "Lines": {
+            "24": 14,
+            "25": 14,
+            "26": 14
+          },
+          "Branches": []
+        },
+        "System.Void Workbench.Comparer.GenericComparerFactory`1::.ctor()": {
+          "Lines": {
+            "11": 6
+          },
+          "Branches": []
+        }
+      }
+    }
+  }
+}
