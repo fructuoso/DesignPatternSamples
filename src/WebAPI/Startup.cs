@@ -86,6 +86,8 @@ namespace DesignPatternSamples.WebAPI
                 endpoints.MapControllers();
             });
 
+            app.UseDetranVerificadorDebitosFactory();
+
             app.UseMvc();
         }
     }
@@ -96,7 +98,7 @@ namespace DesignPatternSamples.WebAPI
         {
             return services
                 .AddTransient<IDetranVerificadorDebitosServices, DetranVerificadorDebitosServices>()
-                .AddTransient<IDetranVerificadorDebitosFactory, DetranVerificadorDebitosFactory>()
+                .AddSingleton<IDetranVerificadorDebitosFactory, DetranVerificadorDebitosFactory>()
                 .AddTransient<DetranPEVerificadorDebitosRepository>()
                 .AddTransient<DetranSPVerificadorDebitosRepository>()
                 .AddTransient<DetranRJVerificadorDebitosRepository>()
@@ -110,6 +112,20 @@ namespace DesignPatternSamples.WebAPI
                 .Where(t => t.IsSubclassOf(typeof(Profile)));
 
             return services.AddAutoMapper(types.ToArray());
+        }
+    }
+
+    public static class ApplicationBuilderExtensions
+    {
+        public static IApplicationBuilder UseDetranVerificadorDebitosFactory(this IApplicationBuilder app)
+        {
+            app.ApplicationServices.GetService<IDetranVerificadorDebitosFactory>()
+                .Register("PE", typeof(DetranPEVerificadorDebitosRepository))
+                .Register("RJ", typeof(DetranRJVerificadorDebitosRepository))
+                .Register("SP", typeof(DetranSPVerificadorDebitosRepository))
+                .Register("RS", typeof(DetranRSVerificadorDebitosRepository));
+
+            return app;
         }
     }
 }

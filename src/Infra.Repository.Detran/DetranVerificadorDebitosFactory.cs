@@ -1,7 +1,5 @@
 ﻿using DesignPatternSamples.Application.Repository;
-using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace DesignPatternSamples.Infra.Repository.Detran
@@ -14,12 +12,6 @@ namespace DesignPatternSamples.Infra.Repository.Detran
         public DetranVerificadorDebitosFactory(IServiceProvider serviceProvider)
         {
             _ServiceProvider = serviceProvider;
-
-            //Código MOCK, pode ser fornecido de forma externa.
-            _Repositories.Add("PE", typeof(DetranPEVerificadorDebitosRepository));
-            _Repositories.Add("RJ", typeof(DetranRJVerificadorDebitosRepository));
-            _Repositories.Add("SP", typeof(DetranSPVerificadorDebitosRepository));
-            _Repositories.Add("RS", typeof(DetranRSVerificadorDebitosRepository));
         }
 
         public IDetranVerificadorDebitosRepository Create(string UF)
@@ -32,6 +24,16 @@ namespace DesignPatternSamples.Infra.Repository.Detran
             }
 
             return result;
+        }
+
+        public IDetranVerificadorDebitosFactory Register(string UF, Type repository)
+        {
+            if (!_Repositories.TryAdd(UF, repository))
+            {
+                _Repositories[UF] = repository;
+            }
+
+            return this;
         }
     }
 }
