@@ -1,12 +1,13 @@
 ﻿using DesignPatternSamples.Application.Repository;
-using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 
 namespace DesignPatternSamples.Infra.Repository.Detran
 {
     public class DetranVerificadorDebitosFactory : IDetranVerificadorDebitosFactory
     {
         private readonly IServiceProvider _ServiceProvider;
+        private readonly IDictionary<string, Type> _Repositories = new Dictionary<string, Type>();
 
         public DetranVerificadorDebitosFactory(IServiceProvider serviceProvider)
         {
@@ -16,19 +17,23 @@ namespace DesignPatternSamples.Infra.Repository.Detran
         public IDetranVerificadorDebitosRepository Create(string UF)
         {
             IDetranVerificadorDebitosRepository result = null;
-            switch (UF)
+
+            if (_Repositories.TryGetValue(UF, out Type type))
             {
-                case "PE":
-                    result = _ServiceProvider.GetService<DetranPEVerificadorDebitosRepository>();
-                    break;
-                case "SP":
-                    result = _ServiceProvider.GetService<DetranSPVerificadorDebitosRepository>();
-                    break;
-                default:
-                    break;
+                result = _ServiceProvider.GetService(type) as IDetranVerificadorDebitosRepository;
             }
 
             return result;
+        }
+
+        public IDetranVerificadorDebitosFactory Register(string UF, Type repository)
+        {
+            if (!_Repositories.TryAdd(UF, repository))
+            {
+                _Repositories[UF] = repository;
+            }
+
+            return this;
         }
     }
 }

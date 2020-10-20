@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace DesignPatternSamples.Application.Services
 {
-    public interface IDetranVerificadorDebitosServices
+    public interface IDetranVerificadorDebitosService
     {
         Task<IEnumerable<DebitoVeiculo>> ConsultarDebitos(Veiculo veiculo);
     }

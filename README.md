@@ -51,7 +51,7 @@ Podemos tornar o consumo ainda mais interessante criando uma *Sugar Sintax* atra
 
 Vamos criar um serviço de consulta de débitos do veículo que deve ser capaz de acessar o sistema do DETRAN, porém temos um sistema diferente do DETRAN por estado.
 
-Nós queremos manter o princípio do 'Princípio Aberto-Fechado', onde se for necessário realizar a implementação de um novo estado nós devemos extender o código ao invés de modifica-lo.
+Nós queremos manter o princípio do 'Aberto-Fechado', onde se for necessário realizar a implementação de um novo estado nós devemos extender o código ao invés de modifica-lo.
 
 #### Solução:
 
@@ -64,3 +64,54 @@ Nós queremos manter o princípio do 'Princípio Aberto-Fechado', onde se for ne
 * [Implementação](src/Infra.Repository.Detran/DetranVerificadorDebitosFactory.cs)
 * [Consumo](src/Application/Implementations/DetranVerificadorDebitosServices.cs#L20)
 * [Teste](src/Infra.Repository.Detran.Tests/DetranVerificadorDebitosFactoryTests.cs#L22)
+
+### Template Method
+
+#### Problema:
+
+Visto que teremos que implementar 27 serviços diferentes para acessar TODOS os DETRAN que temos espalhados pelo Brasil.
+
+Entendemos que por mais que os sites sejam diferentes, os passos necessários para extrair a informaçõa costumam ser semelhantes:
+
+1. Consultar Site
+2. Consolidar Resultado
+
+Como a nossa interface [IDetranVerificadorDebitosRepository](src/Application/Repository/IDetranVerificadorDebitosRepository.cs) possui apenas o método COnsultardebitos, nosso código corre risco de não ficar padronizado e ainda perdermos o principio da 'Responsabilidade Única'.
+
+#### Solução:
+
+1. Criar uma classe abstrata com métodos mais específicos para realizar o trabalho desejado;
+2. A classe abstrata 'deve' implementar o método exposto pela Interface;
+3. Ao invés das classes implementarem a Interface, elas herdarão o comportamento da classe abstrata, implementando apenas os métodos mais específicos.
+
+Com isso torna-se mais fácil:
+* Garantir principio da 'Responsabilidade Unica';
+* Dividir o trabalho;
+* Testar o código.
+
+[Implementação](src/Infra.Repository.Detran/DetranVerificadorDebitosRepositoryCrawlerBase.cs)
+[Consumo](src/Infra.repository.detran/DetranPEVerificadorDebitosRepository.cs)
+
+### Decorator
+
+#### Problema: 
+
+Com o serviço [DetranVerificadorDebitosServices](src/Application/Implementations/DetranVerificadorDebitosServices.cs) identificamos que precisamos adicionar funcionalidades técnicas a ele (como por exemplo **Log** e **Cache**), porém essas funcionalidades não devem gerar acoplamento no nosso código.
+
+Então como fazer isso sem quebrar os principios de 'Responsabilidade Única' e 'Aberto-Fechado'?
+
+##### Solução:
+
+Neste cenário estamos usando uma abordagem que nos permite transferir a complexidade de registrar um Decorator no ServiceCollection para um método de extensão.
+
+Desta forma precisamos:
+
+1. Criar uma nova classe concreta que herde da Interface que será 'decorada';
+2. Implementar nesta nova classe a funcionalidade que gostaríamos de acrescentar ao método em questão;
+3. Adicionar Decorator no Injetor de Dependencias fazendo referência à interface que será decorada.
+
+Obs.: É possivel incluir mais de um Decorator, porém é preciso ter ciência de que a ordem em que eles são assossiados faz diferença no resultado final.
+
+[Método de Extensão](src/Workbench.DependencyInjection.Extensions/ServiceCollectionExtensions.cs#L10)
+[Implementação](src/Application/Decorators/DetranVerificadorDebitosDecoratorLogger.cs#L23)
+[Registro](src/WebAPI/Startup.cs#L103)

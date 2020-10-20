@@ -1,4 +1,5 @@
 using AutoMapper;
+using DesignPatternSamples.Application.Decorators;
 using DesignPatternSamples.Application.Implementations;
 using DesignPatternSamples.Application.Repository;
 using DesignPatternSamples.Application.Services;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Linq;
+using Workbench.DependencyInjection.Extensions;
 
 namespace DesignPatternSamples.WebAPI
 {
@@ -86,6 +88,8 @@ namespace DesignPatternSamples.WebAPI
                 endpoints.MapControllers();
             });
 
+            app.UseDetranVerificadorDebitosFactory();
+
             app.UseMvc();
         }
     }
@@ -95,10 +99,13 @@ namespace DesignPatternSamples.WebAPI
         public static IServiceCollection AddDependencyInjection(this IServiceCollection services)
         {
             return services
-                .AddTransient<IDetranVerificadorDebitosServices, DetranVerificadorDebitosServices>()
-                .AddTransient<IDetranVerificadorDebitosFactory, DetranVerificadorDebitosFactory>()
+                .AddTransient<IDetranVerificadorDebitosService, DetranVerificadorDebitosServices>()
+                .Decorate<IDetranVerificadorDebitosService, DetranVerificadorDebitosDecoratorLogger>()
+                .AddSingleton<IDetranVerificadorDebitosFactory, DetranVerificadorDebitosFactory>()
                 .AddTransient<DetranPEVerificadorDebitosRepository>()
-                .AddTransient<DetranSPVerificadorDebitosRepository>();
+                .AddTransient<DetranSPVerificadorDebitosRepository>()
+                .AddTransient<DetranRJVerificadorDebitosRepository>()
+                .AddTransient<DetranRSVerificadorDebitosRepository>();
         }
 
         public static IServiceCollection AddAutoMapper(this IServiceCollection services)
@@ -108,6 +115,20 @@ namespace DesignPatternSamples.WebAPI
                 .Where(t => t.IsSubclassOf(typeof(Profile)));
 
             return services.AddAutoMapper(types.ToArray());
+        }
+    }
+
+    public static class ApplicationBuilderExtensions
+    {
+        public static IApplicationBuilder UseDetranVerificadorDebitosFactory(this IApplicationBuilder app)
+        {
+            app.ApplicationServices.GetService<IDetranVerificadorDebitosFactory>()
+                .Register("PE", typeof(DetranPEVerificadorDebitosRepository))
+                .Register("RJ", typeof(DetranRJVerificadorDebitosRepository))
+                .Register("SP", typeof(DetranSPVerificadorDebitosRepository))
+                .Register("RS", typeof(DetranRSVerificadorDebitosRepository));
+
+            return app;
         }
     }
 }

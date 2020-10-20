@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Infra.Repository.Detran\Infra.Repository.Detran.csproj" />
+    <ProjectReference Include="..\Workbench.DependencyInjection.Extensions\Workbench.DependencyInjection.Extensions.csproj" />
   </ItemGroup>
 
 
