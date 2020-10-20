@@ -15,9 +15,9 @@ namespace DesignPatternSamples.WebAPI.Controllers.Detran
     public class DebitosController : ControllerBase
     {
         private readonly IMapper _Mapper;
-        private readonly IDetranVerificadorDebitosServices _DetranVerificadorDebitosServices;
+        private readonly IDetranVerificadorDebitosService _DetranVerificadorDebitosServices;
 
-        public DebitosController(IMapper mapper, IDetranVerificadorDebitosServices detranVerificadorDebitosServices)
+        public DebitosController(IMapper mapper, IDetranVerificadorDebitosService detranVerificadorDebitosServices)
         {
             _Mapper = mapper;
             _DetranVerificadorDebitosServices = detranVerificadorDebitosServices;

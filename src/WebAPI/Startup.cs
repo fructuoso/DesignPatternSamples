@@ -1,4 +1,5 @@
 using AutoMapper;
+using DesignPatternSamples.Application.Decorators;
 using DesignPatternSamples.Application.Implementations;
 using DesignPatternSamples.Application.Repository;
 using DesignPatternSamples.Application.Services;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Linq;
+using Workbench.DependencyInjection.Extensions;
 
 namespace DesignPatternSamples.WebAPI
 {
@@ -97,7 +99,8 @@ namespace DesignPatternSamples.WebAPI
         public static IServiceCollection AddDependencyInjection(this IServiceCollection services)
         {
             return services
-                .AddTransient<IDetranVerificadorDebitosServices, DetranVerificadorDebitosServices>()
+                .AddTransient<IDetranVerificadorDebitosService, DetranVerificadorDebitosServices>()
+                .Decorate<IDetranVerificadorDebitosService, DetranVerificadorDebitosDecoratorLogger>()
                 .AddSingleton<IDetranVerificadorDebitosFactory, DetranVerificadorDebitosFactory>()
                 .AddTransient<DetranPEVerificadorDebitosRepository>()
                 .AddTransient<DetranSPVerificadorDebitosRepository>()

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DesignPatternSamples.Application.Implementations
 {
-    public class DetranVerificadorDebitosServices : IDetranVerificadorDebitosServices
+    public class DetranVerificadorDebitosServices : IDetranVerificadorDebitosService
     {
         private readonly IDetranVerificadorDebitosFactory _Factory;
 
