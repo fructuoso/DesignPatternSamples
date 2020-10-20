@@ -64,3 +64,30 @@ Nós queremos manter o princípio do 'Princípio Aberto-Fechado', onde se for ne
 * [Implementação](src/Infra.Repository.Detran/DetranVerificadorDebitosFactory.cs)
 * [Consumo](src/Application/Implementations/DetranVerificadorDebitosServices.cs#L20)
 * [Teste](src/Infra.Repository.Detran.Tests/DetranVerificadorDebitosFactoryTests.cs#L22)
+
+### Template Method
+
+#### Problema:
+
+Visto que teremos que implementar 27 serviços diferentes para acessar TODOS os DETRAN que temos espalhados pelo Brasil.
+
+Entendemos que por mais que os sites sejam diferentes, os passos necessários para extrair a informaçõa costumam ser semelhantes:
+
+1. Consultar Site
+2. Consolidar Resultado
+
+Como a nossa interface [IDetranVerificadorDebitosRepository](src/Application/Repository/IDetranVerificadorDebitosRepository.cs) possui apenas o método COnsultardebitos, nosso código corre risco de não ficar padronizado e ainda perdermos o principio da 'Responsabilidade Única'.
+
+#### Solução:
+
+1. Criar uma classe abstrata com métodos mais específicos para realizar o trabalho desejado;
+2. A classe abstrata 'deve' implementar o método exposto pela Interface;
+3. Ao invés das classes implementarem a Interface, elas herdarão o comportamento da classe abstrata, implementando apenas os métodos mais específicos.
+
+Com isso torna-se mais fácil:
+* Garantir principio da 'Responsabilidade Unica';
+* Dividir o trabalho;
+* Testar o código.
+
+[Implementação](src/Infra.Repository.Detran/DetranVerificadorDebitosRepositoryCrawlerBase.cs)
+[Consumo](src/Infra.repository.detran/DetranPEVerificadorDebitosRepository.cs)
