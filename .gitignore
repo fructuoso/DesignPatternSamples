@@ -4,5 +4,8 @@
 [Oo]bj/
 *.user
 
+# VS Code
+.vscode/
+
 # Testes de Cobertura
 CoverageResults
