@@ -2,6 +2,7 @@
 
 namespace DesignPatternSamples.Application.DTO
 {
+    [Serializable]
     public class DebitoVeiculo
     {
         public DateTime DataOcorrencia { get; set; }

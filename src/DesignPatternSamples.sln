@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infra.Repository.Detran", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Workbench.DependencyInjection.Extensions", "Workbench.DependencyInjection.Extensions\Workbench.DependencyInjection.Extensions.csproj", "{E6959B8C-EB09-4288-B84C-8752DD708F41}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Workbench.IDistributedCache.Extensions", "Workbench.IDistributedCache.Extensions\Workbench.IDistributedCache.Extensions.csproj", "{FD7E1EE8-EF31-4785-B945-1ACDDB5D065F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,10 @@ Global
 		{E6959B8C-EB09-4288-B84C-8752DD708F41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6959B8C-EB09-4288-B84C-8752DD708F41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6959B8C-EB09-4288-B84C-8752DD708F41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD7E1EE8-EF31-4785-B945-1ACDDB5D065F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD7E1EE8-EF31-4785-B945-1ACDDB5D065F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD7E1EE8-EF31-4785-B945-1ACDDB5D065F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD7E1EE8-EF31-4785-B945-1ACDDB5D065F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -85,6 +91,7 @@ Global
 		{F18BCE3C-E182-4C8F-A39C-7CEA4853CE73} = {FAAF7A15-4496-4D73-9D1A-581C3B230232}
 		{3EEE90D9-A054-400C-BFC7-9865C0C2DEE5} = {42A88419-8568-433D-A027-A5853780A83E}
 		{E6959B8C-EB09-4288-B84C-8752DD708F41} = {81650748-EE14-4EA6-A5FC-D8CCEB7873D5}
+		{FD7E1EE8-EF31-4785-B945-1ACDDB5D065F} = {81650748-EE14-4EA6-A5FC-D8CCEB7873D5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4A90C331-830A-4D9E-971D-F17899C6CD14}

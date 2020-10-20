@@ -46,6 +46,12 @@ namespace DesignPatternSamples.WebAPI
             services.AddDependencyInjection()
                 .AddAutoMapper();
 
+            /** Cache distribuído FAKE
+             * 
+             */
+
+            services.AddDistributedMemoryCache();
+            
             services.AddControllers();
 
             services.AddMvc(options =>
@@ -100,6 +106,7 @@ namespace DesignPatternSamples.WebAPI
         {
             return services
                 .AddTransient<IDetranVerificadorDebitosService, DetranVerificadorDebitosServices>()
+                .Decorate<IDetranVerificadorDebitosService, DetranVerificadorDebitosDecoratorCache>()
                 .Decorate<IDetranVerificadorDebitosService, DetranVerificadorDebitosDecoratorLogger>()
                 .AddSingleton<IDetranVerificadorDebitosFactory, DetranVerificadorDebitosFactory>()
                 .AddTransient<DetranPEVerificadorDebitosRepository>()
