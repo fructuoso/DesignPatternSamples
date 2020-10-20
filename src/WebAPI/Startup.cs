@@ -1,3 +1,9 @@
+using AutoMapper;
+using DesignPatternSamples.Application.Implementations;
+using DesignPatternSamples.Application.Repository;
+using DesignPatternSamples.Application.Services;
+using DesignPatternSamples.Infra.Repository.Detran;
+using DesignPatternSamples.WebAPI.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -5,7 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using DesignPatternSamples.WebAPI.Models;
+using System;
+using System.Linq;
 
 namespace DesignPatternSamples.WebAPI
 {
@@ -33,6 +40,9 @@ namespace DesignPatternSamples.WebAPI
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "DesignPatternSamples", Version = "v1" });
             });
             #endregion
+
+            services.AddDependencyInjection()
+                .AddAutoMapper();
 
             services.AddControllers();
 
@@ -77,6 +87,27 @@ namespace DesignPatternSamples.WebAPI
             });
 
             app.UseMvc();
+        }
+    }
+
+    public static class ServiceCollectionExtensions
+    {
+        public static IServiceCollection AddDependencyInjection(this IServiceCollection services)
+        {
+            return services
+                .AddTransient<IDetranVerificadorDebitosServices, DetranVerificadorDebitosServices>()
+                .AddTransient<IDetranVerificadorDebitosFactory, DetranVerificadorDebitosFactory>()
+                .AddTransient<DetranPEVerificadorDebitosRepository>()
+                .AddTransient<DetranSPVerificadorDebitosRepository>();
+        }
+
+        public static IServiceCollection AddAutoMapper(this IServiceCollection services)
+        {
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(a => a.GetTypes())
+                .Where(t => t.IsSubclassOf(typeof(Profile)));
+
+            return services.AddAutoMapper(types.ToArray());
         }
     }
 }

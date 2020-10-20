@@ -44,3 +44,23 @@ Podemos tornar o consumo ainda mais interessante criando uma *Sugar Sintax* atra
 
 * [Implementação](src/Workbench.Linq.Extensions/DistinctExtensions.cs)
 * [Consumo](src/Workbench.Linq.Extensions.Tests/DistinctExtensionsTests.cs#L26)
+
+### Factory
+
+#### Problema: 
+
+Vamos criar um serviço de consulta de débitos do veículo que deve ser capaz de acessar o sistema do DETRAN, porém temos um sistema diferente do DETRAN por estado.
+
+Nós queremos manter o princípio do 'Princípio Aberto-Fechado', onde se for necessário realizar a implementação de um novo estado nós devemos extender o código ao invés de modifica-lo.
+
+#### Solução:
+
+1. Criar uma interface que determine uma assinatura única para o serviço;
+2. Realizar uma implementação para cada um dos estados;
+3. Criar uma classe Factory, onde sua responsabilidade será determinar qual classe concreta deverá ser instanciada;
+
+<u>OBS.: Para todas as demais classes a referência deve ser feita através da Interface.</u>
+
+* [Implementação](src/Infra.Repository.Detran/DetranVerificadorDebitosFactory.cs)
+* [Consumo](src/Application/Implementations/DetranVerificadorDebitosServices.cs#L20)
+* [Teste](src/Infra.Repository.Detran.Tests/DetranVerificadorDebitosFactoryTests.cs#L22)
