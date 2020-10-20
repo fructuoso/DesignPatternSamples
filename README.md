@@ -65,6 +65,22 @@ Nós queremos manter o princípio do 'Aberto-Fechado', onde se for necessário r
 * [Consumo](src/Application/Implementations/DetranVerificadorDebitosServices.cs#L20)
 * [Teste](src/Infra.Repository.Detran.Tests/DetranVerificadorDebitosFactoryTests.cs#L22)
 
+### Singleton
+
+#### Problema:
+
+Visto que o nosso Factory tem como responsabilidade apenas identificar qual classe concreta teve ser inicializada a partir de um Setup pré-estabelecido no [Startup](src/WebAPI/Startup.cs#L130) da aplicação, não faz sentido que ele seja instanciado a cada solicitação.
+
+#### Solução:
+
+Como estamos fazendo uso da Injeção de Dependencia nativa do .Net Core processo se torna absurdamente simples.
+
+1. Modificar o registro no Startup para que o serviço seja registrado como Singleton.
+
+[Implementação](src/WebAPI/Startup.cs#L111)
+
+Com isso nós temos uma única instância sendo inicializada e configurada no Startup da aplicação.
+
 ### Template Method
 
 #### Problema:
@@ -100,7 +116,7 @@ Com o serviço [DetranVerificadorDebitosServices](src/Application/Implementation
 
 Então como fazer isso sem quebrar os principios de 'Responsabilidade Única' e 'Aberto-Fechado'?
 
-##### Solução:
+#### Solução:
 
 Neste cenário estamos usando uma abordagem que nos permite transferir a complexidade de registrar um Decorator no ServiceCollection para um método de extensão.
 
