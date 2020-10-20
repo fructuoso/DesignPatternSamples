@@ -19,6 +19,8 @@ namespace DesignPatternsSamples.Infra.Repository.Detran.Tests
         [Theory(DisplayName = "Dado um UF que está devidamente registrado no Factory devemos receber a sua implementação correspondente")]
         [InlineData("PE", typeof(DetranPEVerificadorDebitosRepository))]
         [InlineData("SP", typeof(DetranSPVerificadorDebitosRepository))]
+        [InlineData("RJ", typeof(DetranRJVerificadorDebitosRepository))]
+        [InlineData("RS", typeof(DetranRSVerificadorDebitosRepository))]
         public void InstanciarServicoPorUFRegistrado(string uf, Type implementacao)
         {
             var resultado = _Factory.Create(uf);

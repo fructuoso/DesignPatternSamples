@@ -98,7 +98,9 @@ namespace DesignPatternSamples.WebAPI
                 .AddTransient<IDetranVerificadorDebitosServices, DetranVerificadorDebitosServices>()
                 .AddTransient<IDetranVerificadorDebitosFactory, DetranVerificadorDebitosFactory>()
                 .AddTransient<DetranPEVerificadorDebitosRepository>()
-                .AddTransient<DetranSPVerificadorDebitosRepository>();
+                .AddTransient<DetranSPVerificadorDebitosRepository>()
+                .AddTransient<DetranRJVerificadorDebitosRepository>()
+                .AddTransient<DetranRSVerificadorDebitosRepository>();
         }
 
         public static IServiceCollection AddAutoMapper(this IServiceCollection services)

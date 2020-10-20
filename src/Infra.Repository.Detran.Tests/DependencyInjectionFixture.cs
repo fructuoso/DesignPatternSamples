@@ -16,6 +16,8 @@ namespace DesignPatternsSamples.Infra.Repository.Detran.Tests
                 .AddLogging()
                 .AddTransient<DetranPEVerificadorDebitosRepository>()
                 .AddTransient<DetranSPVerificadorDebitosRepository>()
+                .AddTransient<DetranRJVerificadorDebitosRepository>()
+                .AddTransient<DetranRSVerificadorDebitosRepository>()
                 .AddTransient<IDetranVerificadorDebitosFactory, DetranVerificadorDebitosFactory>();
 
             #region IConfiguration
