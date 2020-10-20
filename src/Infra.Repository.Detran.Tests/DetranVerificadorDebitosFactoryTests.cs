@@ -16,7 +16,7 @@ namespace DesignPatternsSamples.Infra.Repository.Detran.Tests
             _Factory = serviceProvider.GetService<IDetranVerificadorDebitosFactory>();
         }
 
-        [Theory(DisplayName = "Dado um UF que est� devidamente registrado no Factory devemos receber a sua implementa��o correspondente")]
+        [Theory(DisplayName = "Dado um UF que está devidamente registrado no Factory devemos receber a sua implementação correspondente")]
         [InlineData("PE", typeof(DetranPEVerificadorDebitosRepository))]
         [InlineData("SP", typeof(DetranSPVerificadorDebitosRepository))]
         public void InstanciarServicoPorUFRegistrado(string uf, Type implementacao)
@@ -27,7 +27,7 @@ namespace DesignPatternsSamples.Infra.Repository.Detran.Tests
             Assert.IsType(implementacao, resultado);
         }
 
-        [Fact(DisplayName = "Dado um UF que n�o est� registrado no Factory devemos receber NULL")]
+        [Fact(DisplayName = "Dado um UF que não está registrado no Factory devemos receber NULL")]
         public void InstanciarServicoPorUFNaoRegistrado()
         {
             IDetranVerificadorDebitosRepository implementacao = _Factory.Create("CE");
