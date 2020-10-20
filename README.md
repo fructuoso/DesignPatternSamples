@@ -114,4 +114,11 @@ Obs.: É possivel incluir mais de um Decorator, porém é preciso ter ciência d
 
 * [Método de Extensão](src/Workbench.DependencyInjection.Extensions/ServiceCollectionExtensions.cs#L10)
 * [Implementação](src/Application/Decorators/DetranVerificadorDebitosDecoratorLogger.cs#L23)
-* [Registro](src/WebAPI/Startup.cs#L103)
+* [Registro](src/WebAPI/Startup.cs#L110)
+
+O Decorator funciona como uma 'Boneca Russa' dessa forma podemos 'empilhar' diversos Decorators em uma mesma Interface.
+
+Temos o exemplo de um segundo Decorator adicionando o recurso de Cache ao nosso Service.
+
+* [Implementação](src/Application/Decorators/DetranVerificadorDebitosDecoratorCache.cs#L25)
+* [Registro](src/WebAPI/Startup.cs#L09)
