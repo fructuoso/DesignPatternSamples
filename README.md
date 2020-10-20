@@ -89,8 +89,8 @@ Com isso torna-se mais fácil:
 * Dividir o trabalho;
 * Testar o código.
 
-[Implementação](src/Infra.Repository.Detran/DetranVerificadorDebitosRepositoryCrawlerBase.cs)
-[Consumo](src/Infra.repository.detran/DetranPEVerificadorDebitosRepository.cs)
+* [Implementação](src/Infra.Repository.Detran/DetranVerificadorDebitosRepositoryCrawlerBase.cs)
+* [Consumo](src/Infra.repository.detran/DetranPEVerificadorDebitosRepository.cs)
 
 ### Decorator
 
@@ -112,6 +112,6 @@ Desta forma precisamos:
 
 Obs.: É possivel incluir mais de um Decorator, porém é preciso ter ciência de que a ordem em que eles são assossiados faz diferença no resultado final.
 
-[Método de Extensão](src/Workbench.DependencyInjection.Extensions/ServiceCollectionExtensions.cs#L10)
-[Implementação](src/Application/Decorators/DetranVerificadorDebitosDecoratorLogger.cs#L23)
-[Registro](src/WebAPI/Startup.cs#L103)
+* [Método de Extensão](src/Workbench.DependencyInjection.Extensions/ServiceCollectionExtensions.cs#L10)
+* [Implementação](src/Application/Decorators/DetranVerificadorDebitosDecoratorLogger.cs#L23)
+* [Registro](src/WebAPI/Startup.cs#L103)
