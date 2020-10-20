@@ -122,7 +122,7 @@ Neste cenário estamos usando uma abordagem que nos permite transferir a complex
 
 Desta forma precisamos:
 
-1. Criar uma nova classe concreta que herde da Interface que será 'decorada';
+1. Criar uma nova classe concreta que deverá implementar a Interface que será 'decorada';
 2. Implementar nesta nova classe a funcionalidade que gostaríamos de acrescentar ao método em questão;
 3. Adicionar Decorator no Injetor de Dependencias fazendo referência à interface que será decorada.
 
