@@ -4,8 +4,10 @@ using DesignPatternSamples.Application.Implementations;
 using DesignPatternSamples.Application.Repository;
 using DesignPatternSamples.Application.Services;
 using DesignPatternSamples.Infra.Repository.Detran;
+using DesignPatternSamples.WebAPI.Middlewares;
 using DesignPatternSamples.WebAPI.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -46,10 +48,7 @@ namespace DesignPatternSamples.WebAPI
             services.AddDependencyInjection()
                 .AddAutoMapper();
 
-            /** Cache distribuído FAKE
-             * 
-             */
-
+            /*Cache distribuído FAKE*/
             services.AddDistributedMemoryCache();
             
             services.AddControllers();
@@ -89,12 +88,9 @@ namespace DesignPatternSamples.WebAPI
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-
             app.UseDetranVerificadorDebitosFactory();
+
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.UseMvc();
         }
@@ -112,7 +108,8 @@ namespace DesignPatternSamples.WebAPI
                 .AddTransient<DetranPEVerificadorDebitosRepository>()
                 .AddTransient<DetranSPVerificadorDebitosRepository>()
                 .AddTransient<DetranRJVerificadorDebitosRepository>()
-                .AddTransient<DetranRSVerificadorDebitosRepository>();
+                .AddTransient<DetranRSVerificadorDebitosRepository>()
+                .AddScoped<ExceptionHandlingMiddleware>();
         }
 
         public static IServiceCollection AddAutoMapper(this IServiceCollection services)

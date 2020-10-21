@@ -13,8 +13,10 @@ namespace DesignPatternSamples.WebAPI.Models
         }
     }
 
-    public class FailureResultModel : SuccessResultModel<object>
+    public class FailureResultModel : FailureResultModel<object>
     {
         public FailureResultModel(IEnumerable<ResultDetail> details) : base(null, details) { }
+        public FailureResultModel(ResultDetail detail) : this(new List<ResultDetail>() { detail }) { }
+        public FailureResultModel(string detail) : this(new ResultDetail(detail)) { }
     }
 }
