@@ -42,7 +42,7 @@ Nós não queremos criar uma única implementação engessada que nos permita co
 [Implementação](src/Workbench.Comparer/GenericComparerFactory.cs)\
 [Consumo](src/Workbench.GenericComparer.Tests/GenericComparerFactoryTest.cs#L27)
 
-Podemos tornar o consumo ainda mais interessante criando uma *Sugar Sintax* através de métodos de extensão.
+Podemos tornar o consumo ainda mais interessante criando uma *Sugar Syntax* através de métodos de extensão.
 
 [Implementação](src/Workbench.Linq.Extensions/DistinctExtensions.cs)\
 [Consumo](src/Workbench.Linq.Extensions.Tests/DistinctExtensionsTests.cs#L26)
