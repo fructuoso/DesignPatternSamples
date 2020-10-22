@@ -39,12 +39,12 @@ Nós não queremos criar uma única implementação engessada que nos permita co
 
 <u>Desta forma a classe que criamos sabe comparar objetos, porém ela não sabe os critérios que serão utilizados, os critérios serão injetados através de uma função anônima.</u>
 
-[Implementação](src/Workbench.Comparer/GenericComparerFactory.cs)
+[Implementação](src/Workbench.Comparer/GenericComparerFactory.cs)\
 [Consumo](src/Workbench.GenericComparer.Tests/GenericComparerFactoryTest.cs#L27)
 
 Podemos tornar o consumo ainda mais interessante criando uma *Sugar Sintax* através de métodos de extensão.
 
-[Implementação](src/Workbench.Linq.Extensions/DistinctExtensions.cs)
+[Implementação](src/Workbench.Linq.Extensions/DistinctExtensions.cs)\
 [Consumo](src/Workbench.Linq.Extensions.Tests/DistinctExtensionsTests.cs#L26)
 
 Desta forma através do padrão [Strategy](#strategy) estamos aderentes ao princípio **Inversão de Controle**.
@@ -65,8 +65,8 @@ Se for necessário realizar a implementação de um novo estado nós devemos est
 
 <u>OBS.: Para todas as demais classes a referência deve ser feita através da Interface.</u>
 
-[Implementação](src/Infra.Repository.Detran/DetranVerificadorDebitosFactory.cs)
-[Consumo](src/Application/Implementations/DetranVerificadorDebitosServices.cs#L20)
+[Implementação](src/Infra.Repository.Detran/DetranVerificadorDebitosFactory.cs)\
+[Consumo](src/Application/Implementations/DetranVerificadorDebitosServices.cs#L20)\
 [Teste](src/Infra.Repository.Detran.Tests/DetranVerificadorDebitosFactoryTests.cs#L22)
 
 Desta forma através do padrão [Factory](#factory) estamos aderentes ao princípio **Aberto-Fechado**.
@@ -112,7 +112,7 @@ Com isso torna-se mais fácil:
 * Dividir o trabalho;
 * Testar o código.
 
-[Implementação](src/Infra.Repository.Detran/DetranVerificadorDebitosRepositoryCrawlerBase.cs)
+[Implementação](src/Infra.Repository.Detran/DetranVerificadorDebitosRepositoryCrawlerBase.cs)\
 [Consumo](src/Infra.repository.detran/DetranPEVerificadorDebitosRepository.cs)
 
 O neste exemplo o nosso [Template Method](#template-method) ainda seguindo o princípio **Segregação da Interface**, onde os métodos específicos foram adicionados na nossa classe abstrata [DetranVerificadorDebitosRepositoryCrawlerBase](src/Repository.Detran/../Infra.Repository.Detran/DetranVerificadorDebitosRepositoryCrawlerBase.cs), desta forma conseguimos atingir também o princípio de **Substituição de Liskov**.
@@ -137,15 +137,15 @@ Desta forma precisamos:
 
 Obs.: É possível incluir mais de um Decorator, porém é preciso ter ciência de que a ordem em que eles são associados faz diferença no resultado final.
 
-[Método de Extensão](src/Workbench.DependencyInjection.Extensions/ServiceCollectionExtensions.cs#L10)
-[Implementação](src/Application/Decorators/DetranVerificadorDebitosDecoratorLogger.cs#L23)
+[Método de Extensão](src/Workbench.DependencyInjection.Extensions/ServiceCollectionExtensions.cs#L10)\
+[Implementação](src/Application/Decorators/DetranVerificadorDebitosDecoratorLogger.cs#L23)\
 [Registro](src/WebAPI/Startup.cs#L110)
 
 O Decorator funciona como uma 'Boneca Russa' dessa forma podemos 'empilhar' diversos Decorators em uma mesma Interface.
 
 Temos o exemplo de um segundo Decorator adicionando o recurso de Cache ao nosso Service.
 
-[Implementação](src/Application/Decorators/DetranVerificadorDebitosDecoratorCache.cs#L25)
+[Implementação](src/Application/Decorators/DetranVerificadorDebitosDecoratorCache.cs#L25)\
 [Registro](src/WebAPI/Startup.cs#L09)
 
 Desta forma nós agregamos duas funcionalidades ao nosso serviço sem modificar o comportamento do serviço, ou modificar quem chama o serviço, desta forma estamos aderentes aos princípios **Responsabilidade Única**, **Aberto-Fechado** e **Inversão de Controle**.
