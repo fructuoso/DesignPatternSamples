@@ -1,6 +1,5 @@
 ﻿using DesignPatternSamples.Application.DTO;
 using DesignPatternSamples.Application.Repository;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -8,13 +7,6 @@ namespace DesignPatternSamples.Infra.Repository.Detran
 {
     public abstract class DetranVerificadorDebitosRepositoryCrawlerBase : IDetranVerificadorDebitosRepository
     {
-        private readonly ILogger _Logger;
-
-        protected DetranVerificadorDebitosRepositoryCrawlerBase(ILogger logger)
-        {
-            _Logger = logger;
-        }
-
         public async Task<IEnumerable<DebitoVeiculo>> ConsultarDebitos(Veiculo veiculo)
         {
             var html = await RealizarAcesso(veiculo);

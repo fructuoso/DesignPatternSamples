@@ -9,3 +9,7 @@
 
 # Testes de Cobertura
 CoverageResults
+
+# Sonar
+.sonarqube
+test-coverage-with-sonar.bat
