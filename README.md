@@ -34,16 +34,14 @@ $ test-coverage.bat
 
 #### Problema:
 
-Utilizar o método Distinct do System.Linq, este espera uma IEqualityComparer.
-
-Nós não queremos criar uma única implementação engessada que nos permita comparar os objetos de uma única forma.
+Nosso objetivo é Utilizar o método Distinct do System.Linq, este por sua vez espera como entrada uma IEqualityComparer. Isso por si só já representa uma implementação de Strategy, entretanto nós não queremos criar uma única implementação engessada que nos permita comparar um determinado objeto de uma única forma.
 
 ##### Solução:
 
-1. Criar uma classe que implemente a interface IEqualityComparer;
-2. Esta classe deve receber o 'como' os objetos deverão ser comparados através de um parâmetro;
+1. Criar uma classe que implemente a interface [IEqualityComparer](https://docs.microsoft.com/pt-br/dotnet/api/system.collections.generic.iequalitycomparer-1?view=netcore-3.1);
+2. Esta classe deve receber o 'como' os objetos deverão ser comparados através de um parâmetro, que neste caso é uma função anônima;
 
-<u>Desta forma a classe que criamos sabe comparar objetos, porém ela não sabe os critérios que serão utilizados, os critérios serão injetados através de uma função anônima.</u>
+Desta forma a classe que criamos sabe comparar objetos, porém ela não sabe os critérios que serão utilizados, os critérios serão injetados através de uma função anônima.
 
 [Implementação](src/Workbench.Comparer/GenericComparerFactory.cs)\
 [Consumo](src/Workbench.GenericComparer.Tests/GenericComparerFactoryTest.cs#L27)
@@ -59,17 +57,15 @@ Desta forma através do padrão [Strategy](#strategy) estamos aderentes ao princ
 
 #### Problema: 
 
-Vamos criar um serviço de consulta de débitos do veículo que deve ser capaz de acessar o sistema do DETRAN, porém temos um sistema diferente do DETRAN por estado.
+Nós queremos criar um serviço de consulta de débitos do veículo que seja capaz de acessar o sistema do DETRAN e obter estas informações, porém o DETRAN possui uma aplicação completamente diferente de acordo com o estado.
 
-Se for necessário realizar a implementação de um novo estado nós devemos estender o código ao invés de modifica-lo.
+Nós não queremos modificar o nosso serviço sempre que um novo estado for implementado.
 
 #### Solução:
 
 1. Criar uma interface que determine uma assinatura única para o serviço;
 2. Realizar uma implementação para cada um dos estados;
 3. Criar uma classe Factory, onde sua responsabilidade será determinar qual classe concreta deverá ser instanciada;
-
-<u>OBS.: Para todas as demais classes a referência deve ser feita através da Interface.</u>
 
 [Implementação](src/Infra.Repository.Detran/DetranVerificadorDebitosFactory.cs)\
 [Consumo](src/Application/Implementations/DetranVerificadorDebitosServices.cs#L20)\
@@ -83,11 +79,11 @@ Neste exemplo o nosso [Factory](#factory) ainda está diretamente relacionado ao
 
 #### Problema:
 
-Visto que o nosso Factory tem como responsabilidade apenas identificar qual classe concreta teve ser inicializada a partir de um Setup pré-estabelecido no [Startup](src/WebAPI/Startup.cs#L130) da aplicação, não faz sentido que ele seja instanciado a cada solicitação.
+Visto que o nosso Factory tem como responsabilidade apenas identificar a classe concreta que teve ser inicializada a partir de um Setup pré-estabelecido no [Startup](src/WebAPI/Startup.cs#L130) da aplicação, não faz sentido que ele seja instanciado a cada solicitação.
 
 #### Solução:
 
-Como estamos fazendo uso da Injeção de Dependência nativa do .Net Core processo se torna absurdamente simples:
+Como estamos fazendo uso da Injeção de Dependência nativa do .Net Core processo se torna mais simples:
 
 1. Modificar o registro no Startup para que o serviço seja registrado como Singleton.
 
@@ -101,7 +97,7 @@ Com isso nós temos uma única instância sendo inicializada e configurada no [S
 
 Visto que em algum momento iremos implementar 27 serviços diferentes para acessar os DETRAN que temos espalhados pelo Brasil.
 
-Entendemos que por mais que os sites sejam diferentes, os passos necessários para extrair a informação costumam ser semelhantes:
+Entendemos que, mesmo que, os sites sejam diferentes, os passos necessários para extrair a informação costumam ser semelhantes:
 
 * Consultar Site
 * Consolidar Resultado
