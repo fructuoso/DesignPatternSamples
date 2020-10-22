@@ -4,7 +4,7 @@
 |Develop|![.NET Core](https://github.com/fructuoso/DesignPatternSamples/workflows/.NET%20Core/badge.svg?branch=develop)|
 |Main|![.NET Core](https://github.com/fructuoso/DesignPatternSamples/workflows/.NET%20Core/badge.svg?branch=main)|
 
-Aplicação de exemplo de aplicação de Design Patterns na prática em um projeto WebAPI .NET Core 3.1
+Aplicação de exemplo de aplicação de Design Patterns na prática em um projeto WebAPI .NET Core 3.1 utilizada na palestra "Aplicando design patterns na prática com C#" ([Link Apresentação](Apresentação/Aplicando%20design%20patterns%20na%20prática%20com%20C#.pdf))
 
 ## Testes de Cobertura
 
