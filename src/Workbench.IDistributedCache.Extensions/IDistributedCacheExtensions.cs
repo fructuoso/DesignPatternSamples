@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using System;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using Abstractions = Microsoft.Extensions.Caching.Distributed;
 
@@ -8,6 +9,8 @@ namespace Workbench.IDistributedCache.Extensions
 {
     public static class IDistributedCacheExtensions
     {
+        public static IFormatter Formatter { get; set; } = new BinaryFormatter();
+
         public static TEntity GetOrCreate<TEntity>(this Abstractions.IDistributedCache cache, string key, Func<TEntity> predicate)
         {
             TEntity entity = cache.Get<TEntity>(key);
@@ -43,10 +46,9 @@ namespace Workbench.IDistributedCache.Extensions
         {
             if (entity == null) { return default; }
 
-            BinaryFormatter formatter = new BinaryFormatter();
             using (MemoryStream stream = new MemoryStream())
             {
-                formatter.Serialize(stream, entity);
+                Formatter.Serialize(stream, entity);
                 return stream.ToArray();
             }
         }
@@ -55,10 +57,9 @@ namespace Workbench.IDistributedCache.Extensions
         {
             if (data == null) return default;
 
-            BinaryFormatter formatter = new BinaryFormatter();
             using (MemoryStream stream = new MemoryStream(data))
             {
-                var obj = formatter.Deserialize(stream);
+                var obj = Formatter.Deserialize(stream);
                 return (TEntity)obj;
             }
         }

@@ -7,7 +7,6 @@ using DesignPatternSamples.Infra.Repository.Detran;
 using DesignPatternSamples.WebAPI.Middlewares;
 using DesignPatternSamples.WebAPI.Models;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;

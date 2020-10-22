@@ -11,7 +11,6 @@ namespace DesignPatternSamples.Infra.Repository.Detran
         private readonly ILogger _Logger;
 
         public DetranPEVerificadorDebitosRepository(ILogger<DetranPEVerificadorDebitosRepository> logger)
-            : base(logger)
         {
             _Logger = logger;
         }
