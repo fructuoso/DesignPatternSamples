@@ -8,4 +8,8 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.9" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Workbench.IFormatter.Extensions\Workbench.IFormatter.Extensions.csproj" />
+  </ItemGroup>
+
 </Project>
