@@ -1,5 +1,11 @@
 # DesignPatternSamples
+|Branch|Build|
+|-:|-|
+|Develop|![.NET Core](https://github.com/fructuoso/DesignPatternSamples/workflows/.NET%20Core/badge.svg?branch=develop)|
+|Main|![.NET Core](https://github.com/fructuoso/DesignPatternSamples/workflows/.NET%20Core/badge.svg?branch=main)|
+
 Aplicação de exemplo de aplicação de Design Patterns na prática em um projeto WebAPI .NET Core 3.1
+
 ## Testes de Cobertura
 
 Passo a passo sobre como executar os testes unitários (e calcular o code coverage) localmente antes de realizar o commit.
@@ -47,7 +53,7 @@ Podemos tornar o consumo ainda mais interessante criando uma *Sugar Syntax* atra
 [Implementação](src/Workbench.Linq.Extensions/DistinctExtensions.cs)\
 [Consumo](src/Workbench.Linq.Extensions.Tests/DistinctExtensionsTests.cs#L26)
 
-Desta forma através do padrão [Strategy](#strategy) estamos aderentes ao princípio **Inversão de Controle**.
+Desta forma através do padrão [Strategy](#strategy) estamos aderentes ao princípio **Aberto-Fechado** e **Inversão de Controle**.
 
 ### Factory
 
