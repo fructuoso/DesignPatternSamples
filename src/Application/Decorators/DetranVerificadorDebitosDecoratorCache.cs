@@ -12,6 +12,8 @@ namespace DesignPatternSamples.Application.Decorators
         private readonly IDetranVerificadorDebitosService _Inner;
         private readonly IDistributedCache _Cache;
 
+        private const int DUCACAO_CACHE = 20;
+
         public DetranVerificadorDebitosDecoratorCache(
             IDetranVerificadorDebitosService inner,
             IDistributedCache cache)
@@ -22,7 +24,7 @@ namespace DesignPatternSamples.Application.Decorators
 
         public Task<IEnumerable<DebitoVeiculo>> ConsultarDebitos(Veiculo veiculo)
         {
-            return Task.FromResult(_Cache.GetOrCreate($"{veiculo.UF}_{veiculo.Placa}", () => _Inner.ConsultarDebitos(veiculo).Result));
+            return _Cache.GetOrCreateAsync($"{veiculo.UF}_{veiculo.Placa}", () => _Inner.ConsultarDebitos(veiculo), DUCACAO_CACHE);
         }
     }
 }
