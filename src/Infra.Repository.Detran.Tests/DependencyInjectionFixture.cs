@@ -18,7 +18,7 @@ namespace DesignPatternsSamples.Infra.Repository.Detran.Tests
                 .AddTransient<DetranSPVerificadorDebitosRepository>()
                 .AddTransient<DetranRJVerificadorDebitosRepository>()
                 .AddTransient<DetranRSVerificadorDebitosRepository>()
-                .AddSingleton<IDetranVerificadorDebitosFactory, DetranVerificadorDebitosFactory>();
+                .AddSingleton<IDetranVerificadorDebitosFactory, DetranVerificadorDebitosFactory, IDetranPontosCarteiraFactory, DetranPontosCarteiraFactory>();
 
             #region IConfiguration
             services.AddTransient<IConfiguration>((services) =>
