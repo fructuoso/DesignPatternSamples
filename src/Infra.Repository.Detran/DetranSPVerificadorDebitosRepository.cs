@@ -1,24 +1,26 @@
-﻿using DesignPatternSamples.Application.DTO;
+using DesignPatternSamples.Application.DTO;
 using DesignPatternSamples.Application.Repository;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace DesignPatternSamples.Infra.Repository.Detran
+namespace DesignPatternSamples.Infra.Repository.Detran;
+
+public class DetranSPVerificadorDebitosRepository : IDetranVerificadorDebitosRepository
 {
-    public class DetranSPVerificadorDebitosRepository : IDetranVerificadorDebitosRepository
+    private readonly ILogger _logger;
+
+    public DetranSPVerificadorDebitosRepository(ILogger<DetranSPVerificadorDebitosRepository> logger)
     {
-        private readonly ILogger _Logger;
+        _logger = logger;
+    }
 
-        public DetranSPVerificadorDebitosRepository(ILogger<DetranSPVerificadorDebitosRepository> logger)
+    public Task<IEnumerable<DebitoVeiculo>> ConsultarDebitos(Veiculo veiculo)
+    {
+        _logger.LogDebug("Consultando débitos do veículo placa {Placa} para o estado de SP.", veiculo.Placa);
+        return Task.FromResult<IEnumerable<DebitoVeiculo>>([new DebitoVeiculo
         {
-            _Logger = logger;
-        }
-
-        public Task<IEnumerable<DebitoVeiculo>> ConsultarDebitos(Veiculo veiculo)
-        {
-            _Logger.LogDebug($"Consultando débitos do veículo placa {veiculo.Placa} para o estado de SP.");
-            return Task.FromResult<IEnumerable<DebitoVeiculo>>(new List<DebitoVeiculo>() { new DebitoVeiculo() });
-        }
+            DataOcorrencia = DateTime.Now,
+            Descricao = "Débito exemplo",
+            Valor = 100.00
+        }]);
     }
 }

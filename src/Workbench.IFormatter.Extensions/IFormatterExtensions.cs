@@ -1,36 +1,37 @@
-﻿using System.IO;
-using Serialization = System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Text.Json;
 
-namespace Workbench.IFormatter.Extensions
+namespace Workbench.IFormatter.Extensions;
+
+public static class IFormatterExtensions
 {
-
-    public static class IFormatterExtensions
+    private static readonly JsonSerializerOptions DefaultJsonOptions = new()
     {
-        public static Serialization.IFormatter DefaultFormatter { get; set; } = new BinaryFormatter();
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        WriteIndented = false
+    };
 
-        public static byte[] Serialize<TEntity>(this TEntity entity) => entity.Serialize(DefaultFormatter);
-        public static byte[] Serialize<TEntity>(this TEntity entity, Serialization.IFormatter formatter)
+    public static byte[] Serialize<TEntity>(this TEntity entity) => entity.Serialize(DefaultJsonOptions);
+    public static byte[] Serialize<TEntity>(this TEntity? entity, JsonSerializerOptions? options = null)
+    {
+        if (entity is null)
         {
-            if (entity == null) { return default; }
-
-            using (MemoryStream stream = new MemoryStream())
-            {
-                formatter.Serialize(stream, entity);
-                return stream.ToArray();
-            }
+            return [];
         }
 
-        public static TEntity Deserialize<TEntity>(this byte[] data) => data.Deserialize<TEntity>(DefaultFormatter);
-        public static TEntity Deserialize<TEntity>(this byte[] data, Serialization.IFormatter formatter)
-        {
-            if (data == null) return default;
+        var json = JsonSerializer.Serialize(entity, options ?? DefaultJsonOptions);
+        return Encoding.UTF8.GetBytes(json);
+    }
 
-            using (MemoryStream stream = new MemoryStream(data))
-            {
-                var obj = formatter.Deserialize(stream);
-                return (TEntity)obj;
-            }
+    public static TEntity? Deserialize<TEntity>(this byte[] data) => data.Deserialize<TEntity>(DefaultJsonOptions);
+    public static TEntity? Deserialize<TEntity>(this byte[]? data, JsonSerializerOptions? options = null)
+    {
+        if (data is null || data.Length == 0)
+        {
+            return default;
         }
+
+        var json = Encoding.UTF8.GetString(data);
+        return JsonSerializer.Deserialize<TEntity>(json, options ?? DefaultJsonOptions);
     }
 }

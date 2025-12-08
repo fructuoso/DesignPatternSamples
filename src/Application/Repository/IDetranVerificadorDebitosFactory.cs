@@ -1,10 +1,7 @@
-﻿using System;
+namespace DesignPatternSamples.Application.Repository;
 
-namespace DesignPatternSamples.Application.Repository
+public interface IDetranVerificadorDebitosFactory
 {
-    public interface IDetranVerificadorDebitosFactory
-    {
-        public IDetranVerificadorDebitosFactory Register(string UF, Type repository);
-        public IDetranVerificadorDebitosRepository Create(string UF);
-    }
+    IDetranVerificadorDebitosFactory Register(string uf, Type repository);
+    IDetranVerificadorDebitosRepository? Create(string uf);
 }

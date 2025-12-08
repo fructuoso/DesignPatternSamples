@@ -1,39 +1,35 @@
-﻿using DesignPatternSamples.Application.Repository;
-using System;
-using System.Collections.Generic;
+using DesignPatternSamples.Application.Repository;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace DesignPatternSamples.Infra.Repository.Detran
+namespace DesignPatternSamples.Infra.Repository.Detran;
+
+public class DetranVerificadorDebitosFactory : IDetranVerificadorDebitosFactory
 {
-    public class DetranVerificadorDebitosFactory : IDetranVerificadorDebitosFactory
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IDictionary<string, Type> _repositories = new Dictionary<string, Type>();
+
+    public DetranVerificadorDebitosFactory(IServiceProvider serviceProvider)
     {
-        private readonly IServiceProvider _ServiceProvider;
-        private readonly IDictionary<string, Type> _Repositories = new Dictionary<string, Type>();
+        _serviceProvider = serviceProvider;
+    }
 
-        public DetranVerificadorDebitosFactory(IServiceProvider serviceProvider)
+    public IDetranVerificadorDebitosRepository? Create(string uf)
+    {
+        if (_repositories.TryGetValue(uf, out Type? type))
         {
-            _ServiceProvider = serviceProvider;
+            return _serviceProvider.GetService(type) as IDetranVerificadorDebitosRepository;
         }
 
-        public IDetranVerificadorDebitosRepository Create(string UF)
+        return null;
+    }
+
+    public IDetranVerificadorDebitosFactory Register(string uf, Type repository)
+    {
+        if (!_repositories.TryAdd(uf, repository))
         {
-            IDetranVerificadorDebitosRepository result = null;
-
-            if (_Repositories.TryGetValue(UF, out Type type))
-            {
-                result = _ServiceProvider.GetService(type) as IDetranVerificadorDebitosRepository;
-            }
-
-            return result;
+            _repositories[uf] = repository;
         }
 
-        public IDetranVerificadorDebitosFactory Register(string UF, Type repository)
-        {
-            if (!_Repositories.TryAdd(UF, repository))
-            {
-                _Repositories[UF] = repository;
-            }
-
-            return this;
-        }
+        return this;
     }
 }

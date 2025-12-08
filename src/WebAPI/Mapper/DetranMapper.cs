@@ -1,15 +1,14 @@
-﻿using AutoMapper;
+using AutoMapper;
 using DesignPatternSamples.Application.DTO;
 using DesignPatternSamples.WebAPI.Models.Detran;
 
-namespace DesignPatternSamples.WebAPI.Mapper
+namespace DesignPatternSamples.WebAPI.Mapper;
+
+public class DetranMapper : Profile
 {
-    public class DetranMapper : Profile
+    public DetranMapper()
     {
-        public DetranMapper()
-        {
-            CreateMap<VeiculoModel, Veiculo>();
-            CreateMap<DebitoVeiculo, DebitoVeiculoModel>();
-        }
+        CreateMap<VeiculoModel, Veiculo>();
+        CreateMap<DebitoVeiculo, DebitoVeiculoModel>();
     }
 }

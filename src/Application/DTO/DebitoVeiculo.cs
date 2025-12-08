@@ -1,12 +1,9 @@
-﻿using System;
+namespace DesignPatternSamples.Application.DTO;
 
-namespace DesignPatternSamples.Application.DTO
+[Serializable]
+public class DebitoVeiculo
 {
-    [Serializable]
-    public class DebitoVeiculo
-    {
-        public DateTime DataOcorrencia { get; set; }
-        public string Descricao { get; set; }
-        public double Valor { get; set; }
-    }
+    public required DateTime DataOcorrencia { get; init; }
+    public required string Descricao { get; init; }
+    public required double Valor { get; init; }
 }

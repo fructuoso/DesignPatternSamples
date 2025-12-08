@@ -1,32 +1,151 @@
-name: .NET Core
+name: .NET
 
 on:
   push:
     branches: [ main, develop ]
-    pull_request: [ main ] 
-jobs:
-  build:
+  pull_request:
+    branches: [ main, develop ]
 
+env:
+  DOTNET_VERSION: '8.0.x'
+  WORKING_DIRECTORY: './src'
+  CONFIGURATION: 'Release'
+
+jobs:
+  build-and-test:
+    name: 🏗️ Build & Test
     runs-on: ubuntu-latest
-    env:
-      working-directory: ./src
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+      fail-fast: false
 
     steps:
-    - uses: actions/checkout@v2
-    
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+    - name: 🛒 Checkout repository
+      uses: actions/checkout@v4
       with:
-        dotnet-version: 3.1.301
+        fetch-depth: 0
     
-    - name: Install dependencies
-      working-directory: ${{env.working-directory}}
-      run: dotnet restore
+    - name: 🔧 Setup .NET 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: 📦 Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
     
-    - name: Build
-      working-directory: ${{env.working-directory}}
-      run: dotnet build --configuration Release --no-restore
+    - name: 🔄 Restore dependencies
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      run: dotnet restore --verbosity minimal
     
-    - name: Test
-      working-directory: ${{env.working-directory}}
-      run: dotnet test --no-restore --verbosity normal
+    - name: 🏗️ Build solution
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore --verbosity minimal
+    
+    - name: 🧪 Run unit tests
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      run: dotnet test --configuration ${{ env.CONFIGURATION }} --no-build --verbosity minimal --logger trx --collect:"XPlat Code Coverage"
+      
+    - name: 📊 Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-${{ matrix.os }}
+        path: ${{ env.WORKING_DIRECTORY }}/TestResults/
+        
+    - name: 📈 Upload coverage reports
+      uses: actions/upload-artifact@v4
+      if: matrix.os == 'ubuntu-latest'
+      with:
+        name: coverage-reports
+        path: ${{ env.WORKING_DIRECTORY }}/TestResults/**/coverage.cobertura.xml
+
+  security-scan:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    
+    steps:
+    - name: 🛒 Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: 🔧 Setup .NET 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: 🔐 Run security scan
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      run: |
+        dotnet list package --vulnerable --include-transitive || true
+        dotnet list package --deprecated || true
+
+  code-quality:
+    name: 📏 Code Quality
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: 🛒 Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: 🔧 Setup .NET 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: 📊 Download coverage reports
+      uses: actions/download-artifact@v4
+      with:
+        name: coverage-reports
+        path: coverage/
+        
+    - name: 📈 Generate coverage report
+      run: |
+        dotnet tool install -g dotnet-reportgenerator-globaltool
+        reportgenerator -reports:"coverage/**/coverage.cobertura.xml" -targetdir:"coverage-report" -reporttypes:"MarkdownSummaryGithub"
+        
+    - name: 💬 Comment coverage on PR
+      uses: marocchino/sticky-pull-request-comment@v2
+      if: github.event_name == 'pull_request'
+      with:
+        recreate: true
+        path: coverage-report/SummaryGithub.md
+
+  publish-packages:
+    name: 📦 Publish Packages
+    runs-on: ubuntu-latest
+    needs: [build-and-test, security-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: 🛒 Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: 🔧 Setup .NET 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: 📦 Create packages
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      run: dotnet pack --configuration ${{ env.CONFIGURATION }} --output ./packages
+      
+    - name: 📤 Upload packages artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-packages
+        path: ${{ env.WORKING_DIRECTORY }}/packages/*.nupkg

@@ -2,51 +2,68 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace Workbench.Linq.Extensions.Tests
+namespace Workbench.Linq.Extensions.Tests;
+
+public class DistinctExtensionsTests
 {
-    public class DistinctExtensionsTests
+    private struct PessoaFisica
     {
-        private struct PessoaFisica
+        public string Nome { get; set; }
+        public string NomeMae { get; set; }
+        public string CPF { get; set; }
+    }
+
+    [Fact(DisplayName = "Data uma cole√ß√£o com 3 objetos sendo 2 iguais ent√£o o DISTINCT com uma compara√ß√£o simples deve retornar uma lista com 2 objetos.")]
+    public void ListagemComItensRepetidosComparecaoSimples()
+    {
+        IEnumerable<PessoaFisica> pessoas = new List<PessoaFisica>()
         {
-            public string Nome { get; set; }
-            public string NomeMae { get; set; }
-            public string CPF { get; set; }
-        }
+            new PessoaFisica() { Nome = "Victor Fructuoso", NomeMae = "Ana", CPF = "111.111.111-11" },
+            new PessoaFisica() { Nome = "Victor Fructuoso", NomeMae = "Paula", CPF = "111.111.111-11" },
+            new PessoaFisica() { Nome = "Victor Fructuoso", NomeMae = "Ana", CPF = "222.222.222-22" }
+        };
 
-        [Fact(DisplayName = "Data uma coleÁ„o com 3 objetos sendo 2 iguais ent„o o DISTINCT com uma comparaÁ„o simples deve retornar uma lista com 2 objetos.")]
-        public void ListagemComItensRepetidosComparecaoSimples()
+        IEnumerable<PessoaFisica> pessoasDiferentes = pessoas.Distinct(p => p.CPF);
+
+        Assert.NotNull(pessoasDiferentes);
+        Assert.True(pessoasDiferentes.Any());
+        Assert.Equal(2, pessoasDiferentes.Count());
+        Assert.DoesNotContain(pessoasDiferentes, p => p.NomeMae == "Paula");
+    }
+
+    [Fact(DisplayName = "Data uma cole√ß√£o com 3 objetos sendo 2 iguais ent√£o o DISTINCT com uma compara√ß√£o composta deve retornar uma lista com 2 objetos.")]
+    public void ListagemComItensRepetidosComparecaoComposta()
+    {
+        IEnumerable<PessoaFisica> pessoas = new List<PessoaFisica>()
         {
-            IEnumerable<PessoaFisica> pessoas = new List<PessoaFisica>()
-            {
-                new PessoaFisica() { Nome = "Victor Fructuoso", NomeMae = "Ana", CPF = "111.111.111-11" },
-                new PessoaFisica() { Nome = "Victor Fructuoso", NomeMae = "Paula", CPF = "111.111.111-11" },
-                new PessoaFisica() { Nome = "Victor Fructuoso", NomeMae = "Ana", CPF = "222.222.222-22" }
-            };
+            new PessoaFisica() { Nome = "Victor Fructuoso", NomeMae = "Ana", CPF = "111.111.111-11" },
+            new PessoaFisica() { Nome = "Victor Fructuoso", NomeMae = "Paula", CPF = "111.111.111-11" },
+            new PessoaFisica() { Nome = "Victor Fructuoso", NomeMae = "Ana", CPF = "222.222.222-22" }
+        };
 
-            IEnumerable<PessoaFisica> pessoasDiferentes = pessoas.Distinct(p => p.CPF);
+        IEnumerable<PessoaFisica> pessoasDiferentes = pessoas.Distinct(p => new { p.Nome, p.NomeMae });
 
-            Assert.NotNull(pessoasDiferentes);
-            Assert.True(pessoasDiferentes.Any());
-            Assert.Equal(2, pessoasDiferentes.Count());
-            Assert.DoesNotContain(pessoasDiferentes, p => p.NomeMae == "Paula");
-        }
+        Assert.NotNull(pessoasDiferentes);
+        Assert.True(pessoasDiferentes.Any());
+        Assert.Equal(2, pessoasDiferentes.Count());
+        Assert.DoesNotContain(pessoasDiferentes, p => p.CPF == "222.222.222-22");
+    }
 
-        [Fact(DisplayName = "Data uma coleÁ„o com 3 objetos sendo 2 iguais ent„o o DISTINCT com uma comparaÁ„o composta deve retornar uma lista com 2 objetos.")]
-        public void ListagemComItensRepetidosComparecaoComposta()
+    [Fact(DisplayName = "Data uma cole√ß√£o com 3 objetos sendo 2 iguais ent√£o o DISTINCTBY com uma compara√ß√£o composta deve retornar uma lista com 2 objetos.")]
+    public void ListagemComItensRepetidosComparecaoCompostaDistinctBy()
+    {
+        IEnumerable<PessoaFisica> pessoas = new List<PessoaFisica>()
         {
-            IEnumerable<PessoaFisica> pessoas = new List<PessoaFisica>()
-            {
-                new PessoaFisica() { Nome = "Victor Fructuoso", NomeMae = "Ana", CPF = "111.111.111-11" },
-                new PessoaFisica() { Nome = "Victor Fructuoso", NomeMae = "Paula", CPF = "111.111.111-11" },
-                new PessoaFisica() { Nome = "Victor Fructuoso", NomeMae = "Ana", CPF = "222.222.222-22" }
-            };
+            new PessoaFisica() { Nome = "Victor Fructuoso", NomeMae = "Ana", CPF = "111.111.111-11" },
+            new PessoaFisica() { Nome = "Victor Fructuoso", NomeMae = "Paula", CPF = "111.111.111-11" },
+            new PessoaFisica() { Nome = "Victor Fructuoso", NomeMae = "Ana", CPF = "222.222.222-22" }
+        };
 
-            IEnumerable<PessoaFisica> pessoasDiferentes = pessoas.Distinct(p => new { p.Nome, p.NomeMae });
+        IEnumerable<PessoaFisica> pessoasDiferentes = pessoas.DistinctBy(p => new { p.Nome, p.NomeMae });
 
-            Assert.NotNull(pessoasDiferentes);
-            Assert.True(pessoasDiferentes.Any());
-            Assert.Equal(2, pessoasDiferentes.Count());
-            Assert.DoesNotContain(pessoasDiferentes, p => p.CPF == "222.222.222-22");
-        }
+        Assert.NotNull(pessoasDiferentes);
+        Assert.True(pessoasDiferentes.Any());
+        Assert.Equal(2, pessoasDiferentes.Count());
+        Assert.DoesNotContain(pessoasDiferentes, p => p.CPF == "222.222.222-22");
     }
 }
