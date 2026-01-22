@@ -119,6 +119,7 @@ jobs:
           reportgenerator -reports:"coverage/**/coverage.cobertura.xml" -targetdir:"coverage-report" -reporttypes:"MarkdownSummaryGithub"
         else
           echo "⚠️ No coverage files found. Skipping coverage report generation."
+          mkdir -p coverage-report
           echo "# ⚠️ Coverage Report Not Available" > coverage-report/SummaryGithub.md
           echo "Coverage data was not generated in the build-and-test job." >> coverage-report/SummaryGithub.md
         fi
