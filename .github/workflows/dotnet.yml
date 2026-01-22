@@ -1,0 +1,101 @@
+name: 🚀 Build & Test
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'src/**'
+      - '.github/workflows/dotnet.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'src/**'
+      - '.github/workflows/dotnet.yml'
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  WORKING_DIRECTORY: './src'
+  CONFIGURATION: 'Release'
+
+jobs:
+  build-and-test:
+    name: 🏗️ Build & Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+      fail-fast: false
+
+    steps:
+    - name: 🛒 Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: 🔧 Setup .NET 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: 📦 Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+    
+    - name: 🔄 Restore dependencies
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      run: dotnet restore --verbosity minimal
+    
+    - name: 🏗️ Build solution
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore --verbosity minimal
+    
+    - name: 🧪 Run unit tests
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      run: dotnet test --configuration ${{ env.CONFIGURATION }} --no-build --verbosity minimal --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.ExcludeByFile="**/Program.cs"
+      
+    - name: 📊 Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-${{ matrix.os }}
+        path: ${{ env.WORKING_DIRECTORY }}/TestResults/
+        
+    - name: 📈 Upload coverage reports
+      uses: actions/upload-artifact@v4
+      if: always() && matrix.os == 'ubuntu-latest'
+      with:
+        name: coverage-reports
+        path: ${{ env.WORKING_DIRECTORY }}/TestResults/**/coverage.cobertura.xml
+
+  validate-monorepo:
+    name: 🔍 Validate Monorepo Structure
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: 🛒 Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: 🔍 Check project references
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      run: |
+        echo "🔍 Validating project references in monorepo..."
+        
+        # Check if all project references are relative and correct
+        find . -name "*.csproj" -exec echo "Checking {}" \;
+        find . -name "*.csproj" -exec grep -H "ProjectReference" {} \; || echo "No project references found"
+        
+        # Verify solution file includes all projects
+        if [ -f "DesignPatternSamples.sln" ]; then
+          echo "📋 Solution file projects:"
+          dotnet sln list
+        else
+          echo "⚠️ No solution file found"
+        fi
+        
+        echo "✅ Monorepo validation completed"

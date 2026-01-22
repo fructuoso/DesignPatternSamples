@@ -1,33 +1,30 @@
-﻿using DesignPatternSamples.Application.DTO;
+using System.Diagnostics;
+using DesignPatternSamples.Application.DTO;
 using DesignPatternSamples.Application.Services;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
 
-namespace DesignPatternSamples.Application.Decorators
+namespace DesignPatternSamples.Application.Decorators;
+
+public class DetranVerificadorDebitosDecoratorLogger : IDetranVerificadorDebitosService
 {
-    public class DetranVerificadorDebitosDecoratorLogger : IDetranVerificadorDebitosService
+    private readonly IDetranVerificadorDebitosService _inner;
+    private readonly ILogger<DetranVerificadorDebitosDecoratorLogger> _logger;
+
+    public DetranVerificadorDebitosDecoratorLogger(
+        IDetranVerificadorDebitosService inner,
+        ILogger<DetranVerificadorDebitosDecoratorLogger> logger)
     {
-        private readonly IDetranVerificadorDebitosService _Inner;
-        private readonly ILogger<DetranVerificadorDebitosDecoratorLogger> _Logger;
+        _inner = inner;
+        _logger = logger;
+    }
 
-        public DetranVerificadorDebitosDecoratorLogger(
-            IDetranVerificadorDebitosService inner,
-            ILogger<DetranVerificadorDebitosDecoratorLogger> logger)
-        {
-            _Inner = inner;
-            _Logger = logger;
-        }
-
-        public async Task<IEnumerable<DebitoVeiculo>> ConsultarDebitos(Veiculo veiculo)
-        {
-            Stopwatch watch = Stopwatch.StartNew();
-            _Logger.LogInformation($"Iniciando a execução do método ConsultarDebitos({veiculo})");
-            var result = await _Inner.ConsultarDebitos(veiculo);
-            watch.Stop(); 
-            _Logger.LogInformation($"Encerrando a execução do método ConsultarDebitos({veiculo}) {watch.ElapsedMilliseconds}ms");
-            return result;
-        }
+    public async Task<IEnumerable<DebitoVeiculo>> ConsultarDebitos(Veiculo veiculo)
+    {
+        var watch = Stopwatch.StartNew();
+        _logger.LogInformation("Iniciando a execução do método ConsultarDebitos({Veiculo})", veiculo);
+        var result = await _inner.ConsultarDebitos(veiculo);
+        watch.Stop();
+        _logger.LogInformation("Encerrando a execução do método ConsultarDebitos({Veiculo}) {ElapsedTime}ms", veiculo, watch.ElapsedMilliseconds);
+        return result;
     }
 }

@@ -1,15 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Workbench.Comparer;
 
-namespace Workbench.Linq.Extensions
+namespace Workbench.Linq.Extensions;
+
+public static class DistinctExtensions
 {
-    public static class DistinctExtensions
+    public static IEnumerable<TEntity> Distinct<TEntity>(this IEnumerable<TEntity> source, Func<TEntity, object> predicatee)
     {
-        public static IEnumerable<TEntity> Distinct<TEntity>(this IEnumerable<TEntity> source, Func<TEntity, object> predicatee)
-        {
-            return source.Distinct(GenericComparerFactory<TEntity>.Create(predicatee));
-        }
+        return source.Distinct(GenericComparerFactory<TEntity>.Create(predicatee));
     }
 }

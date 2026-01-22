@@ -1,24 +1,23 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
-namespace DesignPatternSamples.WebAPI.Models
+namespace DesignPatternSamples.WebAPI.Models;
+
+public class SuccessResultModel<TEntity> : AbstractResultModel<TEntity>
 {
-    public class SuccessResultModel<TEntity> : AbstractResultModel<TEntity>
-    {
-        public override bool HasSucceeded => true;
+    public override bool HasSucceeded => true;
 
-        public SuccessResultModel(TEntity data)
-        {
-            Data = data;
-        }
-        public SuccessResultModel(TEntity data, IEnumerable<ResultDetail> details)
-        {
-            Data = data;
-            Details = details;
-        }
-    }
-
-    public class SuccessResultModel : SuccessResultModel<object>
+    public SuccessResultModel(TEntity data)
     {
-        public SuccessResultModel() : base(null, null) { }
+        Data = data;
     }
+    public SuccessResultModel(TEntity data, IEnumerable<ResultDetail> details)
+    {
+        Data = data;
+        Details = details;
+    }
+}
+
+public class SuccessResultModel : SuccessResultModel<object>
+{
+    public SuccessResultModel() : base(null, null) { }
 }

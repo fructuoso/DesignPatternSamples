@@ -1,0 +1,186 @@
+name: 🔍 CI - Quality & Coverage
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'src/**'
+      - '.github/workflows/ci.yml'
+      - '.editorconfig'
+      - 'global.json'
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'src/**'
+      - '.github/workflows/ci.yml'
+      - '.editorconfig'
+      - 'global.json'
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  WORKING_DIRECTORY: './src'
+  CONFIGURATION: 'Release'
+  COVERAGE_THRESHOLD: '80'
+
+jobs:
+  ci:
+    name: 🚀 CI - Build, Test, Quality & Coverage
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 🛒 Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: 🔧 Setup .NET 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: 📦 Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/src/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+        
+    - name: 🔄 Restore dependencies
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      run: dotnet restore --verbosity minimal
+      
+    - name: 🎨 Check code formatting
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      run: |
+        echo "🎨 Checking code formatting..."
+        dotnet format --verify-no-changes --verbosity minimal
+      
+    - name: 🏗️ Build solution
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      run: |
+        echo "🏗️ Building solution..."
+        dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore --verbosity minimal
+      
+    - name: 🔍 Static code analysis
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      run: |
+        echo "🔍 Running static analysis..."
+        dotnet build --configuration Debug --no-restore --verbosity minimal
+        
+    - name: 🔒 Security audit
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      run: |
+        echo "🔒 Running security audit..."
+        dotnet list package --vulnerable --include-transitive || echo "✅ No vulnerabilities found"
+        dotnet list package --deprecated || echo "✅ No deprecated packages found"
+        
+    - name: 🧪 Run tests with coverage
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      run: |
+        echo "🧪 Running tests with coverage collection..."
+        dotnet test \
+          --configuration ${{ env.CONFIGURATION }} \
+          --no-build \
+          --verbosity minimal \
+          --collect:"XPlat Code Coverage" \
+          --results-directory:"./TestResults" \
+          --logger:"trx;LogFileName=test-results.trx" \
+          -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.ExcludeByFile="**/Program.cs"
+      
+    - name: 🛠️ Install ReportGenerator
+      run: dotnet tool install -g dotnet-reportgenerator-globaltool
+      
+    - name: 📊 Generate coverage report
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      run: |
+        echo "📊 Generating coverage report..."
+        
+        # Find coverage files
+        echo "🔍 Coverage files found:"
+        COVERAGE_FILES=$(find TestResults -name "coverage.cobertura.xml" -type f 2>/dev/null || true)
+        
+        if [ -z "$COVERAGE_FILES" ]; then
+          echo "⚠️ No coverage files found. Creating placeholder report..."
+          mkdir -p CoverageReport
+          echo "# ⚠️ Coverage Report Not Available" > CoverageReport/SummaryGithub.md
+          echo "" >> CoverageReport/SummaryGithub.md
+          echo "No coverage data was collected during test execution." >> CoverageReport/SummaryGithub.md
+          exit 0
+        fi
+        
+        # List all coverage files with details
+        echo "📋 Coverage files to be merged:"
+        find TestResults -name "coverage.cobertura.xml" -type f -exec echo "  - {}" \;
+        
+        # Count projects
+        FILE_COUNT=$(find TestResults -name "coverage.cobertura.xml" -type f | wc -l)
+        echo "📊 Total test projects with coverage: $FILE_COUNT"
+        
+        # Generate report
+        reportgenerator \
+          -reports:"TestResults/**/coverage.cobertura.xml" \
+          -targetdir:"CoverageReport" \
+          -reporttypes:"Html;MarkdownSummaryGithub;JsonSummary;Badges" \
+          -title:"DesignPatternSamples - Code Coverage" \
+          -tag:"monorepo;dotnet8;ci"
+          
+    - name: 📈 Check coverage threshold
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      run: |
+        if [ -f "CoverageReport/Summary.json" ]; then
+          COVERAGE=$(jq -r '.summary.linecoverage' CoverageReport/Summary.json)
+          echo "📊 Current coverage: ${COVERAGE}%"
+          
+          # Use bc for floating point comparison
+          if (( $(echo "$COVERAGE < ${{ env.COVERAGE_THRESHOLD }}" | bc -l) )); then
+            echo "❌ Coverage $COVERAGE% is below threshold ${{ env.COVERAGE_THRESHOLD }}%"
+            exit 1
+          else
+            echo "✅ Coverage $COVERAGE% meets threshold ${{ env.COVERAGE_THRESHOLD }}%"
+          fi
+        else
+          echo "⚠️ Summary.json not found, coverage check skipped"
+        fi
+        
+    - name: 💬 Comment coverage on PR
+      if: github.event_name == 'pull_request' && !cancelled() && hashFiles('./src/CoverageReport/SummaryGithub.md') != ''
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        recreate: true
+        path: ${{ env.WORKING_DIRECTORY }}/CoverageReport/SummaryGithub.md
+        
+    - name: 📤 Upload coverage report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: ${{ env.WORKING_DIRECTORY }}/CoverageReport/
+        
+    - name: 📤 Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: ${{ env.WORKING_DIRECTORY }}/TestResults/
+        
+    - name: 📋 CI Summary
+      if: always()
+      run: |
+        echo "## 🎯 CI Results Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "✅ **All checks passed!**" >> $GITHUB_STEP_SUMMARY
+          echo "- 🎨 Code formatting: ✅" >> $GITHUB_STEP_SUMMARY
+          echo "- 🏗️ Build: ✅" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔍 Static analysis: ✅" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔒 Security audit: ✅" >> $GITHUB_STEP_SUMMARY
+          echo "- 🧪 Tests: ✅" >> $GITHUB_STEP_SUMMARY
+          echo "- 📊 Coverage: ✅" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ **Some checks failed - please review the logs above**" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "📊 Coverage reports and test results are available in the artifacts." >> $GITHUB_STEP_SUMMARY

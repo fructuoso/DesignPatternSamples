@@ -1,0 +1,38 @@
+version: 2
+updates:
+  # .NET dependencies
+  - package-ecosystem: "nuget"
+    directory: "/src"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "🔄"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "nuget"
+    reviewers:
+      - "fructuoso"
+    assignees:
+      - "fructuoso"
+    
+  # GitHub Actions dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday" 
+      time: "09:00"
+    commit-message:
+      prefix: "🔧"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    reviewers:
+      - "fructuoso"
+    assignees:
+      - "fructuoso"

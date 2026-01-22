@@ -1,30 +1,27 @@
-﻿using DesignPatternSamples.Application.DTO;
+using DesignPatternSamples.Application.DTO;
 using DesignPatternSamples.Application.Services;
 using Microsoft.Extensions.Caching.Distributed;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Workbench.IDistributedCache.Extensions;
 
-namespace DesignPatternSamples.Application.Decorators
+namespace DesignPatternSamples.Application.Decorators;
+
+public class DetranVerificadorDebitosDecoratorCache : IDetranVerificadorDebitosService
 {
-    public class DetranVerificadorDebitosDecoratorCache : IDetranVerificadorDebitosService
+    private readonly IDetranVerificadorDebitosService _inner;
+    private readonly IDistributedCache _cache;
+
+    private const int DuracaoCache = 20;
+
+    public DetranVerificadorDebitosDecoratorCache(
+        IDetranVerificadorDebitosService inner,
+        IDistributedCache cache)
     {
-        private readonly IDetranVerificadorDebitosService _Inner;
-        private readonly IDistributedCache _Cache;
+        _inner = inner;
+        _cache = cache;
+    }
 
-        private const int DUCACAO_CACHE = 20;
-
-        public DetranVerificadorDebitosDecoratorCache(
-            IDetranVerificadorDebitosService inner,
-            IDistributedCache cache)
-        {
-            _Inner = inner;
-            _Cache = cache;
-        }
-
-        public Task<IEnumerable<DebitoVeiculo>> ConsultarDebitos(Veiculo veiculo)
-        {
-            return _Cache.GetOrCreateAsync($"{veiculo.UF}_{veiculo.Placa}", () => _Inner.ConsultarDebitos(veiculo), DUCACAO_CACHE);
-        }
+    public Task<IEnumerable<DebitoVeiculo>> ConsultarDebitos(Veiculo veiculo)
+    {
+        return _cache.GetOrCreateAsync($"{veiculo.UF}_{veiculo.Placa}", () => _inner.ConsultarDebitos(veiculo), DuracaoCache);
     }
 }

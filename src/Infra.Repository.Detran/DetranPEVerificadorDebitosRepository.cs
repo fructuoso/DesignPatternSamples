@@ -1,31 +1,32 @@
-﻿using DesignPatternSamples.Application.DTO;
+using DesignPatternSamples.Application.DTO;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace DesignPatternSamples.Infra.Repository.Detran
+namespace DesignPatternSamples.Infra.Repository.Detran;
+
+public class DetranPEVerificadorDebitosRepository : DetranVerificadorDebitosRepositoryCrawlerBase
 {
-    public class DetranPEVerificadorDebitosRepository : DetranVerificadorDebitosRepositoryCrawlerBase
+    private readonly ILogger _logger;
+
+    public DetranPEVerificadorDebitosRepository(ILogger<DetranPEVerificadorDebitosRepository> logger)
     {
-        private readonly ILogger _Logger;
+        _logger = logger;
+    }
 
-        public DetranPEVerificadorDebitosRepository(ILogger<DetranPEVerificadorDebitosRepository> logger)
+    protected override Task<IEnumerable<DebitoVeiculo>> PadronizarResultado(string html)
+    {
+        _logger.LogDebug("Padronizando o Resultado {Html}.", html);
+        return Task.FromResult<IEnumerable<DebitoVeiculo>>([new DebitoVeiculo
         {
-            _Logger = logger;
-        }
+            DataOcorrencia = DateTime.UtcNow,
+            Descricao = "Débito PE",
+            Valor = 150.00
+        }]);
+    }
 
-        protected override Task<IEnumerable<DebitoVeiculo>> PadronizarResultado(string html)
-        {
-            _Logger.LogDebug($"Padronizando o Resultado {html}.");
-            return Task.FromResult<IEnumerable<DebitoVeiculo>>(new List<DebitoVeiculo>() { new DebitoVeiculo() { DataOcorrencia = DateTime.UtcNow } });
-        }
-
-        protected override Task<string> RealizarAcesso(Veiculo veiculo)
-        {
-            Task.Delay(5000).Wait(); //Deixando o serviço mais lento para evidenciar o uso do CACHE.
-            _Logger.LogDebug($"Consultando débitos do veículo placa {veiculo.Placa} para o estado de PE.");
-            return Task.FromResult("CONTEUDO DO SITE DO DETRAN/PE");
-        }
+    protected override async Task<string> RealizarAcesso(Veiculo veiculo)
+    {
+        await Task.Delay(5000); // Deixando o serviço mais lento para evidenciar o uso do CACHE.
+        _logger.LogDebug("Consultando débitos do veículo placa {Placa} para o estado de PE.", veiculo.Placa);
+        return "CONTEUDO DO SITE DO DETRAN/PE";
     }
 }

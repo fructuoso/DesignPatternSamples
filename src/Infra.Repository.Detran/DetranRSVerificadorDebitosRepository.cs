@@ -1,29 +1,31 @@
-﻿using DesignPatternSamples.Application.DTO;
+using DesignPatternSamples.Application.DTO;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace DesignPatternSamples.Infra.Repository.Detran
+namespace DesignPatternSamples.Infra.Repository.Detran;
+
+public class DetranRSVerificadorDebitosRepository : DetranVerificadorDebitosRepositoryCrawlerBase
 {
-    public class DetranRSVerificadorDebitosRepository : DetranVerificadorDebitosRepositoryCrawlerBase
+    private readonly ILogger _logger;
+
+    public DetranRSVerificadorDebitosRepository(ILogger<DetranRSVerificadorDebitosRepository> logger)
     {
-        private readonly ILogger _Logger;
+        _logger = logger;
+    }
 
-        public DetranRSVerificadorDebitosRepository(ILogger<DetranRJVerificadorDebitosRepository> logger)
+    protected override Task<IEnumerable<DebitoVeiculo>> PadronizarResultado(string html)
+    {
+        _logger.LogDebug("Padronizando o Resultado {Html}.", html);
+        return Task.FromResult<IEnumerable<DebitoVeiculo>>([new DebitoVeiculo
         {
-            _Logger = logger;
-        }
+            DataOcorrencia = DateTime.Now,
+            Descricao = "Débito RS",
+            Valor = 180.00
+        }]);
+    }
 
-        protected override Task<IEnumerable<DebitoVeiculo>> PadronizarResultado(string html)
-        {
-            _Logger.LogDebug($"Padronizando o Resultado {html}.");
-            return Task.FromResult<IEnumerable<DebitoVeiculo>>(new List<DebitoVeiculo>() { new DebitoVeiculo() });
-        }
-
-        protected override Task<string> RealizarAcesso(Veiculo veiculo)
-        {
-            _Logger.LogDebug($"Consultando débitos do veículo placa {veiculo.Placa} para o estado de RS.");
-            return Task.FromResult("CONTEUDO DO SITE DO DETRAN/RS");
-        }
+    protected override Task<string> RealizarAcesso(Veiculo veiculo)
+    {
+        _logger.LogDebug("Consultando débitos do veículo placa {Placa} para o estado de RS.", veiculo.Placa);
+        return Task.FromResult("CONTEUDO DO SITE DO DETRAN/RS");
     }
 }

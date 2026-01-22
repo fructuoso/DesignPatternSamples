@@ -1,11 +1,8 @@
-﻿using DesignPatternSamples.Application.DTO;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using DesignPatternSamples.Application.DTO;
 
-namespace DesignPatternSamples.Application.Services
+namespace DesignPatternSamples.Application.Services;
+
+public interface IDetranVerificadorDebitosService
 {
-    public interface IDetranVerificadorDebitosService
-    {
-        Task<IEnumerable<DebitoVeiculo>> ConsultarDebitos(Veiculo veiculo);
-    }
+    Task<IEnumerable<DebitoVeiculo>> ConsultarDebitos(Veiculo veiculo);
 }
