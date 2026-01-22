@@ -47,7 +47,7 @@ public class DebitosControllerTests
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(resultado);
         Assert.NotNull(okResult.Value);
-        
+
         _mapperMock.Verify(m => m.Map<Veiculo>(modelInput), Times.Once);
         _serviceMock.Verify(s => s.ConsultarDebitos(veiculo), Times.Once);
         _mapperMock.Verify(m => m.Map<IEnumerable<DebitoVeiculoModel>>(debitos), Times.Once);

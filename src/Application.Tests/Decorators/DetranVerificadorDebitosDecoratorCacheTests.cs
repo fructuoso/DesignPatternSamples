@@ -45,9 +45,9 @@ public class DetranVerificadorDebitosDecoratorCacheTests
         Assert.Equal(debitos, resultado);
         _innerServiceMock.Verify(s => s.ConsultarDebitos(veiculo), Times.Once);
         _cacheMock.Verify(c => c.SetAsync(
-            It.IsAny<string>(), 
-            It.IsAny<byte[]>(), 
-            It.IsAny<DistributedCacheEntryOptions>(), 
+            It.IsAny<string>(),
+            It.IsAny<byte[]>(),
+            It.IsAny<DistributedCacheEntryOptions>(),
             It.IsAny<CancellationToken>()), Times.Once);
     }
 

@@ -45,7 +45,7 @@ public class ExceptionHandlingMiddlewareTests
         // Arrange
         var context = new DefaultHttpContext();
         context.Response.Body = new MemoryStream();
-        
+
         var exception = new InvalidOperationException("Erro de teste");
         RequestDelegate next = (ctx) => throw exception;
 
@@ -55,7 +55,7 @@ public class ExceptionHandlingMiddlewareTests
         // Assert
         Assert.Equal((int)HttpStatusCode.InternalServerError, context.Response.StatusCode);
         Assert.Equal("application/json", context.Response.ContentType);
-        
+
         _loggerMock.Verify(
             x => x.Log(
                 LogLevel.Error,
@@ -73,7 +73,7 @@ public class ExceptionHandlingMiddlewareTests
         var context = new DefaultHttpContext();
         var responseBody = new MemoryStream();
         context.Response.Body = responseBody;
-        
+
         RequestDelegate next = (ctx) => throw new Exception("Erro de teste");
 
         // Act
@@ -83,7 +83,7 @@ public class ExceptionHandlingMiddlewareTests
         responseBody.Seek(0, SeekOrigin.Begin);
         using var reader = new StreamReader(responseBody);
         var responseText = await reader.ReadToEndAsync();
-        
+
         Assert.Contains("Ocorreu um erro inesperado", responseText);
         Assert.Contains("\"HasSucceeded\":false", responseText);
     }
@@ -98,7 +98,7 @@ public class ExceptionHandlingMiddlewareTests
         // Arrange
         var context = new DefaultHttpContext();
         context.Response.Body = new MemoryStream();
-        
+
         var exception = (Exception)Activator.CreateInstance(exceptionType, "Erro de teste")!;
         RequestDelegate next = (ctx) => throw exception;
 
@@ -123,7 +123,7 @@ public class ExceptionHandlingMiddlewareTests
         // Arrange
         var context = new DefaultHttpContext();
         context.Response.Body = new MemoryStream();
-        
+
         var mensagemErro = "Mensagem de erro específica";
         var exception = new Exception(mensagemErro);
         RequestDelegate next = (ctx) => throw exception;

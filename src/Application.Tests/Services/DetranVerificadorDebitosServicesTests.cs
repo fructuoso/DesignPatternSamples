@@ -46,7 +46,7 @@ public class DetranVerificadorDebitosServicesTests
         Assert.Equal(2, resultado.Count());
         Assert.Contains(resultado, d => d.Descricao == "IPVA 2024");
         Assert.Contains(resultado, d => d.Descricao == "Multa");
-        
+
         _factoryMock.Verify(f => f.Create("SP"), Times.Once);
         _repositoryMock.Verify(r => r.ConsultarDebitos(veiculo), Times.Once);
     }

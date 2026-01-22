@@ -10,7 +10,7 @@ public class DebitoVeiculoTests
     {
         // Arrange
         var dataOcorrencia = DateTime.Now.AddDays(-30);
-        
+
         // Act
         var debito = new DebitoVeiculo
         {

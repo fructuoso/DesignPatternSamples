@@ -39,7 +39,7 @@ public class DetranVerificadorDebitosDecoratorLoggerTests
 
         // Assert
         Assert.Equal(debitos, resultado);
-        
+
         // Verificar log de início
         _loggerMock.Verify(
             x => x.Log(

@@ -67,7 +67,7 @@ public class ServiceCollectionExtensionsTests
         // Act
         services.Decorate<ITestService, TestDecorator>();
         var provider = services.BuildServiceProvider();
-        
+
         using var scope = provider.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<ITestService>();
 
@@ -103,7 +103,7 @@ public class ServiceCollectionExtensionsTests
         // Act
         services.Decorate<ITestService, TestDecorator>();
         services.Decorate<ITestService, SecondDecorator>();
-        
+
         var provider = services.BuildServiceProvider();
         var service = provider.GetRequiredService<ITestService>();
 
@@ -170,7 +170,7 @@ public class ServiceCollectionExtensionsTests
         // Act
         services.Decorate<ITestService, TestDecorator>();
         var provider = services.BuildServiceProvider();
-        
+
         var service1 = provider.GetRequiredService<ITestService>();
         var service2 = provider.GetRequiredService<ITestService>();
 
@@ -187,7 +187,7 @@ public class ServiceCollectionExtensionsTests
 
         // Act & Assert
         var result = services.Decorate<ITestService, TestDecorator>();
-        
+
         Assert.Same(services, result);
     }
 

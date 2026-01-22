@@ -29,7 +29,7 @@ public class DetranRSVerificadorDebitosRepositoryTests
         Assert.NotNull(result);
         var debitos = result.ToList();
         Assert.Single(debitos);
-        
+
         var debito = debitos.First();
         Assert.Equal("Débito RS", debito.Descricao);
         Assert.Equal(180.00, debito.Valor);
@@ -71,7 +71,7 @@ public class DetranRSVerificadorDebitosRepositoryTests
         // Assert
         Assert.NotNull(result);
         Assert.NotEmpty(result);
-        
+
         _loggerMock.Verify(
             x => x.Log(
                 LogLevel.Debug,

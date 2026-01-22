@@ -115,7 +115,7 @@ public class IDistributedCacheExtensionsTests
         // Arrange
         var key = "new-key";
         var newData = new TestData { Id = 6, Name = "Newly Created" };
-        
+
         // Act
         var result = _cache.GetOrCreate(key, () => newData, 60);
         var cachedResult = _cache.Get<TestData>(key);
@@ -124,7 +124,7 @@ public class IDistributedCacheExtensionsTests
         Assert.NotNull(result);
         Assert.Equal(6, result.Id);
         Assert.Equal("Newly Created", result.Name);
-        
+
         Assert.NotNull(cachedResult);
         Assert.Equal(6, cachedResult.Id);
     }
@@ -160,7 +160,7 @@ public class IDistributedCacheExtensionsTests
         // Arrange
         var key = "async-new-key";
         var newData = new TestData { Id = 8, Name = "Async Created" };
-        
+
         // Act
         var result = await _cache.GetOrCreateAsync(key, async () =>
         {
@@ -173,7 +173,7 @@ public class IDistributedCacheExtensionsTests
         Assert.NotNull(result);
         Assert.Equal(8, result.Id);
         Assert.Equal("Async Created", result.Name);
-        
+
         Assert.NotNull(cachedResult);
         Assert.Equal(8, cachedResult.Id);
     }
