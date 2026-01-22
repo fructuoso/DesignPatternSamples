@@ -85,7 +85,8 @@ jobs:
           --verbosity minimal \
           --collect:"XPlat Code Coverage" \
           --results-directory:"./TestResults" \
-          --logger:"trx;LogFileName=test-results.trx"
+          --logger:"trx;LogFileName=test-results.trx" \
+          -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.ExcludeByFile="**/Program.cs"
       
     - name: 🛠️ Install ReportGenerator
       run: dotnet tool install -g dotnet-reportgenerator-globaltool
@@ -108,7 +109,13 @@ jobs:
           exit 0
         fi
         
-        echo "$COVERAGE_FILES"
+        # List all coverage files with details
+        echo "📋 Coverage files to be merged:"
+        find TestResults -name "coverage.cobertura.xml" -type f -exec echo "  - {}" \;
+        
+        # Count projects
+        FILE_COUNT=$(find TestResults -name "coverage.cobertura.xml" -type f | wc -l)
+        echo "📊 Total test projects with coverage: $FILE_COUNT"
         
         # Generate report
         reportgenerator \

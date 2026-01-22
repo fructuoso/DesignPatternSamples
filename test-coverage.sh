@@ -39,7 +39,8 @@ dotnet test ./src/DesignPatternSamples.sln \
     --collect:"XPlat Code Coverage" \
     --results-directory:./CoverageResults \
     --logger:"console;verbosity=minimal" \
-    --configuration:Release
+    --configuration:Release \
+    -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.ExcludeByFile="**/Program.cs"
 
 # Verifica se os testes foram executados com sucesso
 if [ $? -eq 0 ]; then
@@ -53,24 +54,31 @@ if [ $? -eq 0 ]; then
     
     echo "📊 Gerando relatório HTML..."
     
-    # Encontra o arquivo de cobertura gerado
-    COVERAGE_FILE=$(find ./CoverageResults -name "coverage.cobertura.xml" | head -1)
+    # Encontra todos os arquivos de cobertura gerados
+    COVERAGE_FILES=$(find ./CoverageResults -name "coverage.cobertura.xml" | tr '\n' ';')
     
-    if [ -z "$COVERAGE_FILE" ]; then
-        echo "⚠️  Arquivo de cobertura não encontrado. Procurando outros formatos..."
-        COVERAGE_FILE=$(find ./CoverageResults -name "*.cobertura.xml" | head -1)
+    if [ -z "$COVERAGE_FILES" ]; then
+        echo "⚠️  Arquivos de cobertura não encontrados. Procurando outros formatos..."
+        COVERAGE_FILES=$(find ./CoverageResults -name "*.cobertura.xml" | tr '\n' ';')
     fi
     
-    if [ -n "$COVERAGE_FILE" ]; then
-        # Gera o relatório HTML
+    if [ -n "$COVERAGE_FILES" ]; then
+        # Remove o último ponto e vírgula
+        COVERAGE_FILES=${COVERAGE_FILES%;}
+        
+        # Conta quantos arquivos foram encontrados
+        FILE_COUNT=$(echo "$COVERAGE_FILES" | tr ';' '\n' | wc -l)
+        echo "📁 Encontrados $FILE_COUNT arquivo(s) de cobertura"
+        
+        # Gera o relatório HTML agregando todos os arquivos
         echo "📊 Gerando relatório HTML detalhado..."
         reportgenerator \
-            -reports:"$COVERAGE_FILE" \
+            -reports:"$COVERAGE_FILES" \
             -targetdir:"CoverageResults/Report" \
             -reporttypes:Html\;HTMLSummary\;Badges \
             -title:"DesignPatternSamples - Code Coverage Report"
     else
-        echo "❌ Arquivo de cobertura não encontrado em CoverageResults/"
+        echo "❌ Arquivos de cobertura não encontrados em CoverageResults/"
         echo "💡 Verifique se os testes possuem cobertura configurada"
         exit 1
     fi

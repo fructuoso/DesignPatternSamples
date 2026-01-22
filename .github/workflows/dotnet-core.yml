@@ -50,7 +50,7 @@ jobs:
     
     - name: 🧪 Run unit tests
       working-directory: ${{ env.WORKING_DIRECTORY }}
-      run: dotnet test --configuration ${{ env.CONFIGURATION }} --no-build --verbosity minimal --logger trx --collect:"XPlat Code Coverage"
+      run: dotnet test --configuration ${{ env.CONFIGURATION }} --no-build --verbosity minimal --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.ExcludeByFile="**/Program.cs"
       
     - name: 📊 Upload test results
       uses: actions/upload-artifact@v4
