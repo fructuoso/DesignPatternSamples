@@ -59,14 +59,14 @@ jobs:
       run: dotnet test --configuration ${{ env.CONFIGURATION }} --no-build --verbosity minimal --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.ExcludeByFile="**/Program.cs"
       
     - name: 📊 Upload test results
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       if: always()
       with:
         name: test-results-${{ matrix.os }}
         path: ${{ env.WORKING_DIRECTORY }}/TestResults/
         
     - name: 📈 Upload coverage reports
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       if: always() && matrix.os == 'ubuntu-latest'
       with:
         name: coverage-reports
