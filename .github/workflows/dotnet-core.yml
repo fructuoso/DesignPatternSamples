@@ -13,8 +13,8 @@ env:
 
 jobs:
   build-and-test:
-    name: 🏗️ Build & Test
-    runs-on: ubuntu-latest
+    name: 🏗️ Build & Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     
     strategy:
       matrix:
@@ -61,7 +61,7 @@ jobs:
         
     - name: 📈 Upload coverage reports
       uses: actions/upload-artifact@v4
-      if: matrix.os == 'ubuntu-latest'
+      if: always() && matrix.os == 'ubuntu-latest'
       with:
         name: coverage-reports
         path: ${{ env.WORKING_DIRECTORY }}/TestResults/**/coverage.cobertura.xml
@@ -92,7 +92,7 @@ jobs:
     name: 📏 Code Quality
     runs-on: ubuntu-latest
     needs: build-and-test
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && !cancelled()
     
     steps:
     - name: 🛒 Checkout repository
@@ -110,15 +110,22 @@ jobs:
       with:
         name: coverage-reports
         path: coverage/
+      continue-on-error: true
         
     - name: 📈 Generate coverage report
       run: |
-        dotnet tool install -g dotnet-reportgenerator-globaltool
-        reportgenerator -reports:"coverage/**/coverage.cobertura.xml" -targetdir:"coverage-report" -reporttypes:"MarkdownSummaryGithub"
+        if [ -d "coverage" ] && [ "$(find coverage -name 'coverage.cobertura.xml' | wc -l)" -gt 0 ]; then
+          dotnet tool install -g dotnet-reportgenerator-globaltool
+          reportgenerator -reports:"coverage/**/coverage.cobertura.xml" -targetdir:"coverage-report" -reporttypes:"MarkdownSummaryGithub"
+        else
+          echo "⚠️ No coverage files found. Skipping coverage report generation."
+          echo "# ⚠️ Coverage Report Not Available" > coverage-report/SummaryGithub.md
+          echo "Coverage data was not generated in the build-and-test job." >> coverage-report/SummaryGithub.md
+        fi
         
     - name: 💬 Comment coverage on PR
       uses: marocchino/sticky-pull-request-comment@v2
-      if: github.event_name == 'pull_request'
+      if: github.event_name == 'pull_request' && hashFiles('coverage-report/SummaryGithub.md') != ''
       with:
         recreate: true
         path: coverage-report/SummaryGithub.md
