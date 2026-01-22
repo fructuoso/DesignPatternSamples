@@ -97,7 +97,18 @@ jobs:
         
         # Find coverage files
         echo "🔍 Coverage files found:"
-        find TestResults -name "coverage.cobertura.xml" -type f || echo "No coverage files found"
+        COVERAGE_FILES=$(find TestResults -name "coverage.cobertura.xml" -type f 2>/dev/null || true)
+        
+        if [ -z "$COVERAGE_FILES" ]; then
+          echo "⚠️ No coverage files found. Creating placeholder report..."
+          mkdir -p CoverageReport
+          echo "# ⚠️ Coverage Report Not Available" > CoverageReport/SummaryGithub.md
+          echo "" >> CoverageReport/SummaryGithub.md
+          echo "No coverage data was collected during test execution." >> CoverageReport/SummaryGithub.md
+          exit 0
+        fi
+        
+        echo "$COVERAGE_FILES"
         
         # Generate report
         reportgenerator \
@@ -126,7 +137,7 @@ jobs:
         fi
         
     - name: 💬 Comment coverage on PR
-      if: github.event_name == 'pull_request' && always()
+      if: github.event_name == 'pull_request' && !cancelled() && hashFiles('./src/CoverageReport/SummaryGithub.md') != ''
       uses: marocchino/sticky-pull-request-comment@v2
       with:
         recreate: true
